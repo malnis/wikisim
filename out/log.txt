@@ -1,1 +1,49 @@
 
+[2016-03-29 15:32:50.904202]	conceptrep started, wid = 765, direction = 1
+[2016-03-29 15:32:50.904260]	concept_embedding started, wid = 765, direction = 1
+[2016-03-29 15:32:50.904292]	checkcache started, wid = 765, direction = 1
+[2016-03-29 15:32:50.904740]	checkcache finished
+[2016-03-29 15:32:50.904774]	found in cache, wid = 765, direction = 1
+[2016-03-29 15:32:50.904800]	concept_embedding finished
+[2016-03-29 15:32:50.905192]	conceptrep finished
+[2016-03-29 15:32:50.905957]	conceptrep started, wid = 144147, direction = 1
+[2016-03-29 15:32:50.905993]	concept_embedding started, wid = 144147, direction = 1
+[2016-03-29 15:32:50.906028]	checkcache started, wid = 144147, direction = 1
+[2016-03-29 15:32:50.906241]	checkcache finished
+[2016-03-29 15:32:50.906273]	found in cache, wid = 144147, direction = 1
+[2016-03-29 15:32:50.906299]	concept_embedding finished
+[2016-03-29 15:32:50.906505]	conceptrep finished
+[2016-03-29 15:32:50.906691]	concept_embedding started, wid = 765, direction = 0
+[2016-03-29 15:32:50.906722]	checkcache started, wid = 765, direction = 0
+[2016-03-29 15:32:50.910473]	checkcache finished
+[2016-03-29 15:32:50.910516]	found in cache, wid = 765, direction = 0
+[2016-03-29 15:32:50.910545]	concept_embedding finished
+[2016-03-29 15:32:50.910573]	concept_embedding started, wid = 144147, direction = 0
+[2016-03-29 15:32:50.910600]	checkcache started, wid = 144147, direction = 0
+[2016-03-29 15:32:50.911436]	checkcache finished
+[2016-03-29 15:32:50.911471]	found in cache, wid = 144147, direction = 0
+[2016-03-29 15:32:50.911497]	concept_embedding finished
+[2016-03-29 15:39:33.221976]	[conceptrep started]	wid = 765, direction = 1
+[2016-03-29 15:39:33.222057]	[concept_embedding started]	wid = 765, direction = 1
+[2016-03-29 15:39:33.222105]	[checkcache started]	wid = 765, direction = 1
+[2016-03-29 15:39:33.222812]	[checkcache]	finished
+[2016-03-29 15:39:33.222876]	found in cache, wid = 765, direction = 1
+[2016-03-29 15:39:33.222921]	[concept_embedding]	finished
+[2016-03-29 15:39:33.223557]	[conceptrep]	finished
+[2016-03-29 15:39:33.224799]	[conceptrep started]	wid = 144147, direction = 1
+[2016-03-29 15:39:33.224852]	[concept_embedding started]	wid = 144147, direction = 1
+[2016-03-29 15:39:33.224895]	[checkcache started]	wid = 144147, direction = 1
+[2016-03-29 15:39:33.225265]	[checkcache]	finished
+[2016-03-29 15:39:33.225313]	found in cache, wid = 144147, direction = 1
+[2016-03-29 15:39:33.225352]	[concept_embedding]	finished
+[2016-03-29 15:39:33.225700]	[conceptrep]	finished
+[2016-03-29 15:39:33.225978]	[concept_embedding started]	wid = 765, direction = 0
+[2016-03-29 15:39:33.226025]	[checkcache started]	wid = 765, direction = 0
+[2016-03-29 15:39:33.231296]	[checkcache]	finished
+[2016-03-29 15:39:33.231358]	found in cache, wid = 765, direction = 0
+[2016-03-29 15:39:33.231408]	[concept_embedding]	finished
+[2016-03-29 15:39:33.231450]	[concept_embedding started]	wid = 144147, direction = 0
+[2016-03-29 15:39:33.231490]	[checkcache started]	wid = 144147, direction = 0
+[2016-03-29 15:39:33.232743]	[checkcache]	finished
+[2016-03-29 15:39:33.232794]	found in cache, wid = 144147, direction = 0
+[2016-03-29 15:39:33.232834]	[concept_embedding]	finished
