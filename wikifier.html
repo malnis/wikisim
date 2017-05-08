@@ -6,11 +6,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
         <meta name="keywords" content="Wikipedia, Concept Representation, Semantic Relatedness, Semantic Similarity, Open Source, Web Service, API, Wikifier">
-        <meta name="description" content="Wikipedia Concept Representation">
-        <meta name="author" content="Armin Sajadi, Ryan Amaral">
+        <meta name="description" content="Wikifier using Wikipedia">
+        <meta name="author" content="Ryan Amaral">
         <link rel="icon" href="../../favicon.ico">
 
-        <title>Wikisim: Open Source Wikipedia Concept Representation and Semantic Relatedness</title>
+        <title>Wikisim Wikifier</title>
 
         <!-- Bootstrap core CSS -->
         <link href="bootstrap-3.3.4-dist/css/bootstrap.min.css" rel="stylesheet">
@@ -48,7 +48,6 @@
                 </div>
                 <div id="navbar" class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <li><a href="#wikifier">Wikifier</a></li>
                         <li><a href="#doc">Documentation</a></li>
                         <li><a href="#download">Download</a></li>
                         <li><a href="#about">About</a></li>
@@ -181,32 +180,6 @@
                 </form>
             </div>
             <div class="container">
-                	
-                <!-- Start Ryan's part -->
-                <div class="panel-group">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <a name="wikifier"></a>
-                            <h1> Wikifier </h1>
-                        </div>
-                        <div class="panel-body">
-							<h3>Enter text to be wikified:</h3>
-							<form id="wikifyform">
-								<textarea id="inputtext" style="width:100%; height:100%" rows="4"></textarea>
-								<div class="btn-group btn-group-lg">
-									<button type="button" id="wikifybutton" class="btn btn-primary">Wikify</button>
-								</div>
-							</form>
-							<h4>Result:</h4>
-							<p id="wikifyresult"></p>
-                        </div>
-						<div class="alert alert-danger " role="alert" id='errwikidiv' hidden=true>
-							<label for="errwikidiv" ><font color="red">Error:</font></label> <label id="errwiki">test</label>
-						</div>  
-                    </div>
-                </div>
-                <!-- End Ryan's part -->
-								
                 <div class="panel-group">
                     <div class="panel panel-default">
                         <div class="panel-heading">
@@ -404,10 +377,6 @@
                     }
 
                 });
-				
-				$("#wikifybutton").click(function () {
-					wikify();
-				});
 
                 $("#batchsimbutton").click(function () {
                     if ($("#simfileinput").val()){
@@ -415,32 +384,6 @@
                     }
 
                 });
-				
-				function wikify(){
-					var inputText = $('#inputtext').val();
-					$('#errwikidiv').hide();
-					alert(inputText);
-					
-			        $.post("cgi-bin/cgi-wikify.py",
-							{
-								inputtext:inputText
-							},
-							function(data, status){
-								if ('err' in data){
-                                    $('#errwikidiv').show();
-                                    $('#errwiki').text(data['err']);
-                                    return
-                                }
-								alert(data);
-								$('#wikifyresult').text(data['text']);
-							}
-						).fail(function (xhr, textStatus, errorThrown) {
-							alert('an error');
-                        	$('#wikifyresult').text("error: " + xhr.responseText + "\n" + textStatus);
-                        	});
-					
-					$('#wikifyresult').show(); // display the result
-				}
             
                function postpairs (){
                     $('#simbutton').attr('disabled', true);

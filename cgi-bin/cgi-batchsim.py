@@ -1,5 +1,6 @@
-#!/home/sajadi/anaconda2/bin/python
-#/users/grad/sajadi/backup/anaconda2/bin/python
+#!/users/grad/sajadi/backup/anaconda2/bin/python
+#/home/sajadi/anaconda2/bin/python
+
 
 import sys
 import cgi, os

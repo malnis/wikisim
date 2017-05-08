@@ -101,6 +101,7 @@ def disambiguate_driver(C, ws, method, direction, op_method):
 
 def get_tp(gold_titles, ids):
     tp=0
+    print(len(gold_titles) + " " + len(ids))
     for m,id2 in zip(gold_titles, ids):
         if title2id(m[1]) == id2:
             tp += 1
