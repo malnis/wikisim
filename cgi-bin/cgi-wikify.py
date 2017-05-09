@@ -30,16 +30,20 @@ if inputText == "":
 
 # get the wikification results
 anchors = wikify(inputText, True, method='popular')
-
-newText = inputText # text to be updated with anchor tags
-
-# highest ending index first so can replace in string without worry
-# though this is a problem untill overlaps are dealt with
-anchors = sorted(anchors, key=itemgetter('end'), reverse=True)
-for anchor in anchors:
-	newText = (newText[0:anchor['start']-1] + 
-		"<a href=\"\\https://en.wikipedia.org/wiki/" + anchor['wikiTitle'] 
-		+ "\">" + anchor['mention'] + "</a>" + newText[anchor['end']:len(inputText)])
+newText = ""
+anchors = sorted(anchors, key=itemgetter('start')) # make sure anchors are sorted
+anchorIndex = 0 # keep track of current anchor added
+i = 0 
+while i < len(inputText):
+    if anchorIndex < len(anchors) and i == anchors[anchorIndex]['start']:
+        anchor = anchors[anchorIndex]
+        newText += ("<a href=\"https://en.wikipedia.org/wiki/" + anchor['wikiTitle']
+                   + "\" target=\"_blank\">" + anchor['mention'] + "</a>")
+        i = anchors[anchorIndex]['end']
+        anchorIndex += 1
+    else:
+        newText += inputText[i]
+        i += 1
 
 print json.dumps({"text":newText})
 		

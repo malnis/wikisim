@@ -404,10 +404,10 @@
                     }
 
                 });
-				
-				$("#wikifybutton").click(function () {
-					wikify();
-				});
+
+                $("#wikifybutton").click(function () {
+                    wikify();
+                });
 
                 $("#batchsimbutton").click(function () {
                     if ($("#simfileinput").val()){
@@ -416,31 +416,31 @@
 
                 });
 				
-				function wikify(){
-					var inputText = $('#inputtext').val();
-					$('#errwikidiv').hide();
-					alert(inputText);
-					
-			        $.post("cgi-bin/cgi-wikify.py",
-							{
-								inputtext:inputText
-							},
-							function(data, status){
-								if ('err' in data){
+                function wikify(){
+                    var inputText = $('#inputtext').val();
+                    $('#errwikidiv').hide();
+                    alert(inputText);
+        
+                    $.post("cgi-bin/cgi-wikify.py",
+                            {
+                                inputtext:inputText
+                            },
+                            function(data, status){
+                                if ('err' in data){
                                     $('#errwikidiv').show();
                                     $('#errwiki').text(data['err']);
                                     return
                                 }
-								alert(data);
-								$('#wikifyresult').text(data['text']);
-							}
-						).fail(function (xhr, textStatus, errorThrown) {
-							alert('an error');
-                        	$('#wikifyresult').text("error: " + xhr.responseText + "\n" + textStatus);
+                                alert(data);
+                                $('#wikifyresult').text(data['text']);
+                            }
+                        ).fail(function (xhr, textStatus, errorThrown) {
+                            alert('an error');
+                            $('#wikifyresult').text("error: " + xhr.responseText + "\n" + textStatus);
                         	});
-					
-					$('#wikifyresult').show(); // display the result
-				}
+    
+                    $('#wikifyresult').show(); // display the result
+                }
             
                function postpairs (){
                     $('#simbutton').attr('disabled', true);
