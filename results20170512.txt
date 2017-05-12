@@ -1,0 +1,35 @@
+{'kore': {
+'popular': {
+	'Manual Split Precision': 0.12073328829752977, 
+	'Pre-Split Recall': 0.36233333333333334, >>>>>>>>>>
+	'Manual Split Recall': 0.3556666666666667, 
+	'Pre-Split Precision': 0.36233333333333334}, >>>>>>>>>>
+'context': {
+	'Manual Split Precision': 0.12641348317307394, >>>>>>>>>>
+	'Pre-Split Recall': 0.34199999999999997, 
+	'Manual Split Recall': 0.37366666666666665, >>>>>>>>>>
+	'Pre-Split Precision': 0.34266666666666656}}, 
+
+'MSNBC': {
+'popular': {
+	'Manual Split Precision': 0.050511351395241245, >>>>>>>>>>
+	'Pre-Split Recall': 0.44922018898181737, >>>>>>>>>>
+	'Manual Split Recall': 0.40604164598682574, >>>>>>>>>>
+	'Pre-Split Precision': 0.7560814240937331}, >>>>>>>>>>
+'context': {
+	'Manual Split Precision': 0.027974813903063306, 
+	'Pre-Split Recall': 0.30106495566851627, 
+	'Manual Split Recall': 0.31008531369555203, 
+	'Pre-Split Precision': 0.42492821474228804}}, 
+
+'AQUAINT': {
+'popular': {
+	'Manual Split Precision': 0.08726967783163417, >>>>>>>>>>
+	'Pre-Split Recall': 0.8066378981953419, >>>>>>>>>>
+	'Manual Split Recall': 0.7510403551631509, >>>>>>>>>>
+	'Pre-Split Precision': 0.818707480573748}, >>>>>>>>>>
+'context': {
+	'Manual Split Precision': 0.047537879433360575, 
+	'Pre-Split Recall': 0.41972040546014155, 
+	'Manual Split Recall': 0.526148180299681, 
+	'Pre-Split Precision': 0.42545312780315814}}}
