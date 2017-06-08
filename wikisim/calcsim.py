@@ -8,7 +8,9 @@ from embedding import *
 import json
 import math
 from scipy import stats
+import requests
 from config import *
+
 #from utils import * # uncomment
 
 __author__ = "Armin Sajadi"
@@ -33,7 +35,40 @@ def _unify_ids_scores(*id_sc_tuple):
         uscs += (scs_u,)                
     return uids, uscs       
 
+def get_solr_count(s):
+    """ Gets the number of documents the string occurs 
+        NOTE: Multi words should be quoted
+    Arg:
+        s: the string (can contain AND, OR, ..)
+    Returns:
+        The number of documents
+    """
+    q='+text:(%s)'%(s,)
+    qstr = 'http://localhost:8983/solr/enwiki20160305/select'
+    params={'indent':'on', 'wt':'json', 'q':q, 'rows':0}
+    r = requests.get(qstr, params=params)
+    D = r.json()['response']
+    return D['numFound']
+
+def getsim_ngd(term1,term2):
+    """ Calculates Normalized Google Distance (ngd) similarity between two concepts 
+    Arg:
+        id1, id2: the two concepts 
+    Returns:
+        The similarity score        
+    """
     
+    f1=get_solr_count('"%s"'%(term1,))
+    
+    f2=get_solr_count('"%s"'%(term2,))
+    f12=get_solr_count('"%s" AND "%s"'%(term1, term2))
+    
+    if (f1==0) or (f2==0) or (f12==0):
+        return 0;
+    dist = (sp.log(max(f1,f2))-sp.log(f12))/(sp.log(WIKI_SIZE)-sp.log(min(f1,f2)));
+    sim = 1-dist if dist <=1 else 0
+    return sim
+        
 def getsim_word2vec(id1, id2):
     """ Calculates wor2vec similarity between two concepts 
     Arg:
@@ -67,9 +102,9 @@ def getsim_wlm(id1, id2):
     f1 = len(in1)
     f2 = len(in2)
     f12=len(in1.intersection(in2))
-    dist = (sp.log(max(f1,f2))-sp.log(f12))/(sp.log(WIKI_SIZE)-sp.log(min(f1,f2)));
     if (f1==0) or (f2==0) or (f12==0):
         return 0;
+    dist = (sp.log(max(f1,f2))-sp.log(f12))/(sp.log(WIKI_SIZE)-sp.log(min(f1,f2)));
     sim = 1-dist if dist <=1 else 0
     return sim
 
@@ -154,6 +189,24 @@ def getsim_emb(id1,id2, direction):
 #     print em2
     return 1-sp.spatial.distance.cosine(em1.values,em2.values);
 
+def encode_entity(term, method,get_id=True):    
+    if method in {'ngd'}:
+        return term
+    if get_id:
+        term = title2id(term)
+    if term is None:
+        return None
+    if method in {'rvspagerank','wlm','cocit','coup','ams'} :
+        return term
+    if 'word2vec_id' in method:
+        term = 'id_' + str(term)
+        return term
+    if 'word2vec':
+        term = str(term)
+        return term
+    
+    return term
+
 def getsim(id1,id2, method='rvspagerank', direction=DIR_BOTH, sim_method=None):
     """ Calculates well-known similarity metrics between two concepts 
     Arg:
@@ -182,6 +235,8 @@ def getsim(id1,id2, method='rvspagerank', direction=DIR_BOTH, sim_method=None):
         sim = getsim_ams(id1,id2)
     elif 'word2vec' in  method:
         sim = getsim_word2vec(id1, id2)
+    elif 'ngd' in  method:
+        sim = getsim_ngd(id1, id2)
     elif sim_method is not None:    
         sim = sim_method(id1,id2)
     else:
@@ -189,38 +244,14 @@ def getsim(id1,id2, method='rvspagerank', direction=DIR_BOTH, sim_method=None):
     log('[getsim]\tfinished')
     return sim
 
-ENTITY_TITLE = 0
-ENTITY_ID = 1
-ENTITY_ID_STR = 2
-ENTITY_ID_ID_STR = 3
     
-def encode_entity(term1, term2, entity_encoding):
-    if entity_encoding==ENTITY_TITLE:
-        return term1, term2
-    
-    term1 = title2id(term1)
-    term2 = title2id(term2)
-    if entity_encoding==ENTITY_ID_STR:
-        term1 = str(term1)
-        term2 = str(term2)
-        
-    if entity_encoding==ENTITY_ID_ID_STR:
-        term1 = 'id_'+term1
-        term2 = 'id_'+term2
-    return term1, term2
-    
-def getsim_file(infilename, outfilename, method='rvspagerank', direction=DIR_BOTH, sim_method=None, entity_encoding=ENTITY_ID):
+def getsim_file(infilename, outfilename, method='rvspagerank', direction=DIR_BOTH, sim_method=None):
     """ Batched (file) similarity.
     
     Args: 
         infilename: tsv file in the format of pair1    pair2   [goldstandard]
         outfilename: tsv file in the format of pair1    pair2   similarity
         direction: 0 for in, 1 for out, 2 for all
-        entity_encoding: how the entity is represented in the dataset
-                        ENTITY_TITLE = simple entity
-                        ENTITY_ID = integer id
-                        ENTITY_ID_STR = str id
-                        ENTITY_ID_ID_STR = id_entityid
                         
     Returns:
         vector of scores, and Spearmans's correlation if goldstandard is given
@@ -238,7 +269,8 @@ def getsim_file(infilename, outfilename, method='rvspagerank', direction=DIR_BOT
         if len(row)>3: 
             gs.append(row[3]);
             
-        term1, term2 = encode_entity(row[1], row[2], entity_encoding)
+        term1 = encode_entity(row[1], method, get_id=True)
+        term2 = encode_entity(row[2], method, get_id=True)
             
         if (term1 is None) or (term2 is None):
             sim=0;
@@ -263,7 +295,6 @@ def getembed_file(infilename, outfilename, direction, get_titles=False, cutoff=N
         direction: 0 for in, 1 for out, 2 for all
         titles: include titles in the embedding (not needed for mere calculations)
         cutoff: the first top cutoff dimensions (None for all)        
-
     """
     
     log('[getembed_file started]\t%s -> %s', infilename, outfilename)
@@ -271,7 +302,7 @@ def getembed_file(infilename, outfilename, direction, get_titles=False, cutoff=N
     dsdata=readds(infilename, usecols=[0]);
     scores=[];
     for row in dsdata.itertuples():        
-        wid = title2id(row[1])
+        wid = encode_entity(row[1], method, get_id=True)
         if wid is None:
             em=pd.Series();
         else:
