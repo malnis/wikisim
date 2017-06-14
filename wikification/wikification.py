@@ -1,11 +1,11 @@
 
+from __future__ import division
 import sys
 sys.path.append('../wikisim/')
 from wikipedia import *
 from operator import itemgetter
 import requests
 import json
-from __future__ import division
 import nltk
 import scipy as sp
 import scipy.sparse as sprs

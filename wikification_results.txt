@@ -1,0 +1,7 @@
+kore:
+popular:
+    M Prec:0.243207070707
+    M Rec:0.347333333333
+relevancy2:
+    M Prec:0.38116017316
+    M Rec:0.557666666667
