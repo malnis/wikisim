@@ -97,7 +97,7 @@ def destroyExclusiveOverlaps(textData):
         overlapIndex = len(overlappingSets) - 1
         theBegin = textData[i][0]
         
-        # look at next words untill not overlap
+        # look at next words until not overlap
         for j in range(i+1, len(textData)):
             # if next word starts before endiest one ends
             if textData[j][0] == theBegin:
@@ -440,6 +440,88 @@ def recall(truthSet, mySet):
     else:
         return (numCorrect/numActual)
     
+def mentionPrecision(trueMentions, otherMentions):
+    """
+    Description:
+        Calculates the precision of otherMentions against the trueMentions.
+    Args:
+        trueMentions: The 'right' answers for what the mentions are.
+        otherMentions: Our mentions obtained through some means.
+    Return:
+        The precision: (# of correct mentions)/(# of found mentions)
+    """
+    
+    numFound = len(otherMentions)
+    numCorrect = 0 # incremented in for loop
+    
+    trueIndex = 0
+    otherIndex = 0
+    
+    while trueIndex < len(trueMentions) and otherIndex < len(otherMentions):
+        # if mentions start and end on the same
+        if (trueMentions[trueIndex][0] == otherMentions[otherIndex][0]
+               and trueMentions[trueIndex][1] == otherMentions[otherIndex][1]):
+            #print ('MATCH: [' + str(trueMentions[trueIndex][0]) + ',' + str(trueMentions[trueIndex][1]) + ']' + trueMentions[trueIndex][2] 
+            #       + ' <===> [' + str(otherMentions[otherIndex][0]) + ',' + str(otherMentions[otherIndex][1]) + ']' + otherMentions[otherIndex][2])
+            numCorrect += 1
+            trueIndex += 1
+            otherIndex += 1
+        # if true mention starts before the other starts
+        elif trueMentions[trueIndex][0] < otherMentions[otherIndex][0]:
+            #print ('FAIL: [' + str(trueMentions[trueIndex][0]) + ',' + str(trueMentions[trueIndex][1]) + ']' + trueMentions[trueIndex][2] 
+            #       + ' <XXX> [' + str(otherMentions[otherIndex][0]) + ',' + str(otherMentions[otherIndex][1]) + ']' + otherMentions[otherIndex][2])
+            trueIndex += 1
+        # if other mention starts before the true starts (same doesnt matter)
+        elif trueMentions[trueIndex][0] >= otherMentions[otherIndex][0]:
+            #print ('FAIL: [' + str(trueMentions[trueIndex][0]) + ',' + str(trueMentions[trueIndex][1]) + ']' + trueMentions[trueIndex][2] 
+            #       + ' <XXX> [' + str(otherMentions[otherIndex][0]) + ',' + str(otherMentions[otherIndex][1]) + ']' + otherMentions[otherIndex][2])
+            otherIndex += 1
+        else:
+            print 'AAAAAAAHHHHHHHHHHHHHHHHHHHHHHHHHHHHH!!!!!!!!!!!!!!!!!!!'
+
+    #print 'correct: ' + str(numCorrect) + '\nfound: ' + str(numFound)
+    if numFound == 0:
+        return 0
+    else:
+        return (numCorrect/numFound)
+
+def mentionRecall(trueMentions, otherMentions):
+    """
+    Description:
+        Calculates the recall of otherMentions against the trueMentions.
+    Args:
+        trueMentions: The 'right' answers for what the mentions are.
+        otherMentions: Our mentions obtained through some means.
+    Return:
+        The recall: (# of correct entities)/(# of actual entities)
+    """
+    
+    numActual = len(trueMentions)
+    numCorrect = 0 # incremented in for loop)
+    
+    trueIndex = 0
+    otherIndex = 0
+    
+    while trueIndex < len(trueMentions) and otherIndex < len(otherMentions):
+        # if mentions start and end on the same
+        if (trueMentions[trueIndex][0] == otherMentions[otherIndex][0]
+               and trueMentions[trueIndex][1] == otherMentions[otherIndex][1]):
+            numCorrect += 1
+            trueIndex += 1
+            otherIndex += 1
+        # if true mention starts before the other starts
+        elif trueMentions[trueIndex][0] < otherMentions[otherIndex][0]:
+            trueIndex += 1
+        # if other mention starts before the true starts (same doesnt matter)
+        elif trueMentions[trueIndex][0] >= otherMentions[otherIndex][0]:
+            otherIndex += 1
+        
+    print 'correct: ' + str(numCorrect) + '\nactual: ' + str(numActual)
+    if numActual == 0:
+        return 0
+    else:
+        return (numCorrect/numActual)
+    
 def getSurroundingWords(text, mIndex, window, asList = False):
     """
     Description:
@@ -542,7 +624,7 @@ def escapeStringSolr(text):
     
     return text
 
-def bestRelevancy1Match(mentionStr, context, candidates):
+def bestContext1Match(mentionStr, context, candidates):
     """
     Description:
         Uses Solr to find the candidate that gives the highest relevance when given the context.
@@ -592,7 +674,7 @@ def bestRelevancy1Match(mentionStr, context, candidates):
             
     return bestIndex # in case it was missed
 
-def bestRelevancy2Match(context, candidates):
+def bestContext2Match(context, candidates):
     """
     Description:
         Uses Solr to find the candidate that gives the highest relevance when given the context.
@@ -698,7 +780,7 @@ def wikifyPopular(textData, candidates):
             
     return topCandidates
 
-def wikifyRelevancy(textData, candidates, oText, useSentence = False, window = 7, method2 = False):
+def wikifyContext(textData, candidates, oText, useSentence = False, window = 7, method2 = False):
     """
     Description:
         Chooses the candidate that has the highest relevance with the surrounding window words.
@@ -724,9 +806,9 @@ def wikifyRelevancy(textData, candidates, oText, useSentence = False, window = 7
             #print '\nMention: ' + textData['text'][mention[0]]
             #print 'Context: ' + context
             if method2 == False:
-                bestIndex = bestRelevancy1Match(textData['text'][mention[0]], context, candidates[i])
+                bestIndex = bestContext1Match(textData['text'][mention[0]], context, candidates[i])
             else:
-                bestIndex = bestRelevancy2Match(context, candidates[i])
+                bestIndex = bestContext2Match(context, candidates[i])
             topCandidates.append([mention[1], mention[2], candidates[i][bestIndex][0]])
         i += 1 # move to list of candidates for next mention
         
@@ -826,10 +908,10 @@ def wikifyEval(text, mentionsGiven, maxC = 20, method='popular', strict = False)
     
     if method == 'popular':
         wikified = wikifyPopular(textData, candidates)
-    elif method == 'relevancy1':
-        wikified = wikifyRelevancy(textData, candidates, oText, useSentence = True, window = 7)
-    elif method == 'relevancy2':
-        wikified = wikifyRelevancy(textData, candidates, oText, useSentence = True, window = 7, method2 = True)
+    elif method == 'context1':
+        wikified = wikifyContext(textData, candidates, oText, useSentence = True, window = 7)
+    elif method == 'context2':
+        wikified = wikifyContext(textData, candidates, oText, useSentence = True, window = 7, method2 = True)
     elif method == 'word2vec':
         wikified = wikifyWord2Vec(textData, candidates, oText, useSentence = False, window = 5)
     elif method == 'coherence':

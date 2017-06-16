@@ -1,8 +1,10 @@
 
 """
-This is for testing performance of different wikification methods.
+This is for testing performance of different wikification methods using BOT F1 score
+as described here: http://cogcomp.cs.illinois.edu/papers/RRDA11.pdf.
 """
 
+from __future__ import division
 from wikification import *
 from IPython.display import clear_output
 import copy
@@ -10,6 +12,7 @@ from datetime import datetime
 import tagme
 import os
 import json
+from sets import Set
 
 tagme.GCUBE_TOKEN = "f6c2ba6c-751b-4977-a94c-c140c30e9b92-843339462"
     
@@ -25,15 +28,16 @@ datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')},
 
 # many different option for combonations of datasets for smaller tests
 #datasets = [{'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')}]
-datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}]
+#datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}]
 #datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}]
 #datasets = [{'name':'wiki5000', 'path':os.path.join(pathStrt,'wiki-mentions.5000.json')}]
-datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')}]
+#datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')}]
 #datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')},{'name':'wiki500', 'path':os.path.join(pathStrt,'wiki-mentions.500.json')}]
 #datasets = [{'name':'nopop', 'path':os.path.join(pathStrt,'nopop.json')}]
 #datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')},{'name':'wiki500', 'path':os.path.join(pathStrt,'wiki-mentions.500.json')},{'name':'nopop', 'path':os.path.join(pathStrt,'nopop.json')}]
 #datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')},{'name':'wiki5000', 'path':os.path.join(pathStrt,'wiki-mentions.5000.json')},{'name':'nopop', 'path':os.path.join(pathStrt,'nopop.json')}]
 #datasets = [{'name':'wiki500', 'path':os.path.join(pathStrt,'wiki-mentions.500.json')}]
+datasets = [{'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')},{'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}]
 
 # 'popular', 'context1', 'context2', 'word2vec', 'coherence', 'tagme'
 methods = ['context2']
@@ -45,11 +49,11 @@ if 'word2vec' in methods:
         word2vec = gensim_loadmodel('/users/cs/amaral/cgmdir/WikipediaClean5Negative300Skip10.Ehsan/WikipediaClean5Negative300Skip10')
 
 doSplit = True
-doManual = True
+doManual = False
 
 verbose = True
 
-maxCands = 20
+maxCands = 50
 
 performances = {}
 
@@ -76,6 +80,8 @@ for dataset in datasets:
         totalPrecM = 0
         totalRecS = 0
         totalRecM = 0
+        totalBotF1S = 0
+        totalBotF1M = 0
         totalLines = 0
         
         # each method tests all lines
@@ -85,23 +91,33 @@ for dataset in datasets:
             
             # get absolute text indexes and entity id of each given mention
             trueEntities = mentionStartsAndEnds(copy.deepcopy(line), forTruth = True) # the ground truth
+            trueSet = Set()
+            for truEnt in trueEntities:
+                trueSet.add(truEnt[2])
             
             # get results for pre split string
             if doSplit and mthd <> 'tagme': # presplit no work on tagme
                 # original split string with mentions given
                 resultS = wikifyEval(copy.deepcopy(line), True, maxC = maxCands, method = mthd)
-                precS = precision(trueEntities, resultS) # precision of pre-split
-                recS = recall(trueEntities, resultS) # recall of pre-split
+                spltSet = Set()
+                for res in resultS:
+                    spltSet.add(res[2])
+                
+                precS = len(trueSet & spltSet)/len(spltSet)
+                recS = len(trueSet & spltSet)/len(trueSet)
+                f1 = (2*precS*recS)/(precS+recS)
                 
                 if verbose:
-                    print 'Split: ' + str(precS) + ', ' + str(recS)
+                    print 'Split: ' + str(precS) + ', ' + str(recS) + ', ' + str(f1)
                 
                 # track results
                 totalPrecS += precS
                 totalRecS += recS
+                totalBotF1S += f1
             else:
                 totalPrecS = 0
                 totalRecS = 0
+                totalBotF1S = 0
                 
             # get results for manually split string
             if doManual:
@@ -115,18 +131,25 @@ for dataset in datasets:
                     # unsplit string to be manually split and mentions found
                     resultM = wikifyEval(" ".join(line['text']), False, maxC = maxCands, method = mthd)
                 
-                precM = precision(trueEntities, resultM) # precision of manual split
-                recM = recall(trueEntities, resultM) # recall of manual split
+                manSet = Set()
+                for res in resultM:
+                    manSet.add(res[2])
+                
+                precM = len(trueSet & manSet)/len(manSet)
+                recM = len(trueSet & manSet)/len(trueSet)
+                f1 = (2*precM*recM)/(precM+recM)
                 
                 if verbose:
-                    print 'Manual: ' + str(precM) + ', ' + str(recM)
-                    
+                    print 'Manual: ' + str(precM) + ', ' + str(recM) + ', ' + str(f1)
+                
                 # track results
                 totalPrecM += precM
                 totalRecM += recM
+                totalBotF1M += f1
             else:
                 totalPrecM = 0
                 totalRecM = 0
+                totalBotF1M = 0
                 
             totalLines += 1
         
@@ -135,7 +158,9 @@ for dataset in datasets:
         performances[dataset['name']][mthd] = {'S Prec':totalPrecS/totalLines, 
                                                'M Prec':totalPrecM/totalLines,
                                               'S Rec':totalRecS/totalLines, 
-                                               'M Rec':totalRecM/totalLines
+                                               'M Rec':totalRecM/totalLines,
+                                               'S BOT F1':totalBotF1S/totalLines,
+                                               'M BOT F1':totalBotF1M/totalLines
                                               }
 
 with open('/users/cs/amaral/wikisim/wikification/wikification_results.txt', 'a') as resultFile:
@@ -147,15 +172,19 @@ with open('/users/cs/amaral/wikisim/wikification/wikification_results.txt', 'a')
                 resultFile.write(mthd + ':'
                        + '\n    S Prec :' + str(performances[dataset['name']][mthd]['S Prec'])
                        + '\n    S Rec :' + str(performances[dataset['name']][mthd]['S Rec'])
+                       + '\n    S BOT F1 :' + str(performances[dataset['name']][mthd]['S BOT F1'])
                        + '\n    M Prec :' + str(performances[dataset['name']][mthd]['M Prec'])
-                       + '\n    M Rec :' + str(performances[dataset['name']][mthd]['M Rec']) + '\n')
+                       + '\n    M Rec :' + str(performances[dataset['name']][mthd]['M Rec'])
+                       + '\n    M BOT F1 :' + str(performances[dataset['name']][mthd]['M BOT F1'])+ '\n')
             elif doSplit:
                 resultFile.write(mthd + ':'
                        + '\n    S Prec :' + str(performances[dataset['name']][mthd]['S Prec'])
-                       + '\n    S Rec :' + str(performances[dataset['name']][mthd]['S Rec']) + '\n')
+                       + '\n    S Rec :' + str(performances[dataset['name']][mthd]['S Rec'])
+                       + '\n    S BOT F1 :' + str(performances[dataset['name']][mthd]['S BOT F1'])+ '\n')
             elif doManual:
                 resultFile.write(mthd + ':'
                        + '\n    M Prec :' + str(performances[dataset['name']][mthd]['M Prec'])
-                       + '\n    M Rec :' + str(performances[dataset['name']][mthd]['M Rec']) + '\n')
+                       + '\n    M Rec :' + str(performances[dataset['name']][mthd]['M Rec'])
+                       + '\n    M BOT F1 :' + str(performances[dataset['name']][mthd]['M BOT F1'])+ '\n')
                 
     resultFile.write('\n' + '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~' + '\n')
