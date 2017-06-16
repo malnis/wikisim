@@ -40,7 +40,7 @@ datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')},
 datasets = [{'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')},{'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}]
 
 # 'popular', 'context1', 'context2', 'word2vec', 'coherence', 'tagme'
-methods = ['context2']
+methods = ['popular']
 
 if 'word2vec' in methods:
     try:
@@ -53,7 +53,7 @@ doManual = False
 
 verbose = True
 
-maxCands = 50
+maxCands = 20
 
 performances = {}
 
