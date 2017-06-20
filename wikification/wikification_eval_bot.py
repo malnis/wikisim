@@ -105,7 +105,10 @@ for dataset in datasets:
                 
                 precS = len(trueSet & spltSet)/len(spltSet)
                 recS = len(trueSet & spltSet)/len(trueSet)
-                f1 = (2*precS*recS)/(precS+recS)
+                try:
+                    f1 = (2*precS*recS)/(precS+recS)
+                except:
+                    f1 = 0
                 
                 if verbose:
                     print 'Split: ' + str(precS) + ', ' + str(recS) + ', ' + str(f1)
@@ -137,7 +140,10 @@ for dataset in datasets:
                 
                 precM = len(trueSet & manSet)/len(manSet)
                 recM = len(trueSet & manSet)/len(trueSet)
-                f1 = (2*precM*recM)/(precM+recM)
+                try:
+                    f1 = (2*precM*recM)/(precM+recM)
+                except:
+                    f1 = 0
                 
                 if verbose:
                     print 'Manual: ' + str(precM) + ', ' + str(recM) + ', ' + str(f1)

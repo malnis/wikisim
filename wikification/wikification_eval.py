@@ -36,7 +36,7 @@ datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':
 #datasets = [{'name':'wiki500', 'path':os.path.join(pathStrt,'wiki-mentions.500.json')}]
 
 # 'popular', 'context1', 'context2', 'word2vec', 'coherence', 'tagme'
-methods = ['popular', 'context2', 'coherence']
+methods = ['popular', 'context2']
 
 if 'word2vec' in methods:
     try:
@@ -44,7 +44,7 @@ if 'word2vec' in methods:
     except:
         word2vec = gensim_loadmodel('/users/cs/amaral/cgmdir/WikipediaClean5Negative300Skip10.Ehsan/WikipediaClean5Negative300Skip10')
 
-doSplit = True
+doSplit = False
 doManual = True
 
 verbose = True
@@ -76,6 +76,8 @@ for dataset in datasets:
         totalPrecM = 0
         totalRecS = 0
         totalRecM = 0
+        totalF1S = 0
+        totalF1M = 0
         totalLines = 0
         
         # each method tests all lines
@@ -92,16 +94,22 @@ for dataset in datasets:
                 resultS = wikifyEval(copy.deepcopy(line), True, maxC = maxCands, method = mthd)
                 precS = precision(trueEntities, resultS) # precision of pre-split
                 recS = recall(trueEntities, resultS) # recall of pre-split
+                try:
+                    f1S = (2*precS*recS)/(precS+recS)
+                except:
+                    f1S = 0
                 
                 if verbose:
-                    print 'Split: ' + str(precS) + ', ' + str(recS)
+                    print 'Split: ' + str(precS) + ', ' + str(recS) + ', ' + str(f1S)
                 
                 # track results
                 totalPrecS += precS
                 totalRecS += recS
+                totalF1S += f1S
             else:
                 totalPrecS = 0
                 totalRecS = 0
+                totalF1S = 0
                 
             # get results for manually split string
             if doManual:
@@ -117,16 +125,22 @@ for dataset in datasets:
                 
                 precM = precision(trueEntities, resultM) # precision of manual split
                 recM = recall(trueEntities, resultM) # recall of manual split
+                try:
+                    f1M = (2*precM*recM)/(precM+recM)
+                except:
+                    f1M = 0
                 
                 if verbose:
-                    print 'Manual: ' + str(precM) + ', ' + str(recM)
+                    print 'Manual: ' + str(precM) + ', ' + str(recM) + str(f1M)
                     
                 # track results
                 totalPrecM += precM
                 totalRecM += recM
+                totalF1M += f1M
             else:
                 totalPrecM = 0
                 totalRecM = 0
+                totalF1M = 0
                 
             totalLines += 1
         
@@ -135,7 +149,9 @@ for dataset in datasets:
         performances[dataset['name']][mthd] = {'S Prec':totalPrecS/totalLines, 
                                                'M Prec':totalPrecM/totalLines,
                                               'S Rec':totalRecS/totalLines, 
-                                               'M Rec':totalRecM/totalLines
+                                               'M Rec':totalRecM/totalLines,
+                                               'S F1':totalF1S/totalLines,
+                                               'M F1':totalF1M/totalLines
                                               }
 
 with open('/users/cs/amaral/wikisim/wikification/wikification_results.txt', 'a') as resultFile:
@@ -147,15 +163,19 @@ with open('/users/cs/amaral/wikisim/wikification/wikification_results.txt', 'a')
                 resultFile.write(mthd + ':'
                        + '\n    S Prec :' + str(performances[dataset['name']][mthd]['S Prec'])
                        + '\n    S Rec :' + str(performances[dataset['name']][mthd]['S Rec'])
+                       + '\n    S F1 :' + str(performances[dataset['name']][mthd]['S F1'])
                        + '\n    M Prec :' + str(performances[dataset['name']][mthd]['M Prec'])
-                       + '\n    M Rec :' + str(performances[dataset['name']][mthd]['M Rec']) + '\n')
+                       + '\n    M Rec :' + str(performances[dataset['name']][mthd]['M Rec'])
+                       + '\n    M F1 :' + str(performances[dataset['name']][mthd]['M F1']) + '\n')
             elif doSplit:
                 resultFile.write(mthd + ':'
                        + '\n    S Prec :' + str(performances[dataset['name']][mthd]['S Prec'])
-                       + '\n    S Rec :' + str(performances[dataset['name']][mthd]['S Rec']) + '\n')
+                       + '\n    S Rec :' + str(performances[dataset['name']][mthd]['S Rec']) 
+                       + '\n    S F1 :' + str(performances[dataset['name']][mthd]['S F1']) + '\n')
             elif doManual:
                 resultFile.write(mthd + ':'
                        + '\n    M Prec :' + str(performances[dataset['name']][mthd]['M Prec'])
-                       + '\n    M Rec :' + str(performances[dataset['name']][mthd]['M Rec']) + '\n')
+                       + '\n    M Rec :' + str(performances[dataset['name']][mthd]['M Rec'])
+                       + '\n    M F1 :' + str(performances[dataset['name']][mthd]['M F1']) + '\n')
                 
     resultFile.write('\n' + '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~' + '\n')

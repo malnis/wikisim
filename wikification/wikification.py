@@ -998,6 +998,9 @@ def wikifyEval(text, mentionsGiven, maxC = 20, method='popular', strict = False)
         textData['mentions'] = [item for item in textData['mentions']
                     if  len(textData['text'][item[0]]) >= MIN_MENTION_LENGTH]
     
+    if method == 'popular':
+        maxC = 1 # only need one cand for popular
+        
     candidates = generateCandidates(textData, maxC, True)
     
     if method == 'popular':
