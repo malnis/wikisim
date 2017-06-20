@@ -24,8 +24,8 @@ datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')},
             {'name':'wiki5000', 'path':os.path.join(pathStrt,'wiki-mentions.5000.json')}]
 
 # many different option for combonations of datasets for smaller tests
-#datasets = [{'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')}]
-datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}]
+datasets = [{'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')}]
+#datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}]
 #datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}]
 #datasets = [{'name':'wiki5000', 'path':os.path.join(pathStrt,'wiki-mentions.5000.json')}]
 datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')}]
@@ -36,7 +36,7 @@ datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':
 #datasets = [{'name':'wiki500', 'path':os.path.join(pathStrt,'wiki-mentions.500.json')}]
 
 # 'popular', 'context1', 'context2', 'word2vec', 'coherence', 'tagme'
-methods = ['context2']
+methods = ['popular', 'context2', 'coherence']
 
 if 'word2vec' in methods:
     try:

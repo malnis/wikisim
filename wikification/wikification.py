@@ -279,22 +279,116 @@ def mentionExtract(text):
     
     return newTextData
 
-def generateCandidates(textData, maxC):
+def getMentionsInSentence(textData, mainWord):
+    """
+    Description:
+        Finds all mentions that are in the same sentence as mainWord.
+    Args:
+        textData: A text in split form along with its suspected mentions.
+        mainWord: The index of the word that is in the wanted sentence
+    Return:
+        A list of mention texts that are in the same sentence as mainWord
+    """
+    
+    sents = nltk.sent_tokenize(" ".join(textData['text']))
+    
+    # start and end of sentences (absolute)
+    sStart = 0
+    sEnd = 0
+    
+    mentionStrs = [] # the mentions
+    
+    curEnd = 0
+    for sent in sents:
+        curEnd += len(sent)
+        # if sentence ends after mention starts
+        if curEnd > mainWord[1]:
+            sEnd = curEnd
+            sStart = sEnd - len(sent)
+            mWIndex = textData['mentions'].index(mainWord) # index of mainWord
+            
+            # add every mention before main in sent to mentionsStr
+            for i in range(mWIndex-1, -1, -1):
+                if textData['mentions'][i][2] > sStart:
+                    mentionStrs.append(textData['text'][textData['mentions'][i][0]])
+                else:
+                    break
+                    
+            # add every mention after main in sent to mentionsStr
+            for i in range(mWIndex+1, len(textData['mentions'])):
+                if textData['mentions'][i][1] < sEnd:
+                    mentionStrs.append(textData['text'][textData['mentions'][i][0]])
+                else:
+                    break
+            
+            break
+    
+    return " ".join(mentionStrs).strip()
+
+def generateCandidates(textData, maxC, hybrid = False):
     """
     Description:
         Generates up to maxC candidates for each possible mention word in phrase.
     Args:
         textData: A text in split form along with its suspected mentions.
         maxC: The max amount of candidates to accept.
+        Hybrid: Whether to include best context fitting results too.
     Return:
         The top maxC candidates for each possible mention word in textData.
     """
     
     candidates = []
     
+    ctxC0 = 0 # the amount of candidates to fill from best context.
+    if hybrid == True:
+        popC = int(maxC/2) + 1 # get ceil
+        ctxC0 = maxC - popC
+    else:
+        popC = maxC
+    
     for mention in textData['mentions']:
         results = sorted(anchor2concept(textData['text'][mention[0]]), key = itemgetter(1), 
-                          reverse = True)
+                          reverse = True)[:popC]
+        
+        # get the right amount to fill with context 
+        if len(results) < popC:
+            # fill in rest with context
+            ctxC = maxC - len(results)
+        elif hybrid == True:
+            ctxC = ctxC0
+        else:
+            ctxC = 0
+            
+        # get some context results from solr
+        if ctxC > 0:
+            mentionStr = escapeStringSolr(textData['text'][mention[0]])
+            ctxStr = escapeStringSolr(getMentionsInSentence(textData, mention))
+            
+            strIds = ['-id:' +  str(res[0]) for res in results]
+            
+            # select all the docs from Solr with the best scores, highest first.
+            addr = 'http://localhost:8983/solr/enwiki20160305/select'
+            
+            if len(ctxStr) == 0:
+                params={'fl':'id', 'indent':'on', 'fq':" ".join(strIds),
+                        'q':'title:(' + mentionStr.encode('utf-8')+')^1.35',
+                        'wt':'json'}
+            else:
+                params={'fl':'id', 'indent':'on', 'fq':" ".join(strIds),
+                        'q':'title:(' + mentionStr.encode('utf-8') + ')^1.35'
+                        + ' text:(' + ctxStr.encode('utf-8') + ')',
+                        'wt':'json'}
+            
+            r = requests.get(addr, params = params)
+            try:
+                if ('response' in r.json() 
+                        and 'docs' in r.json()['response']
+                        and len(r.json()['response']['docs']) > 0):
+                    for doc in r.json()['response']['docs'][:ctxC]:
+                        results.append((long(doc['id']), 0))
+            except:
+                pass
+            
         candidates.append(results[:maxC]) # take up to maxC of the results
     
     return candidates
@@ -904,7 +998,7 @@ def wikifyEval(text, mentionsGiven, maxC = 20, method='popular', strict = False)
         textData['mentions'] = [item for item in textData['mentions']
                     if  len(textData['text'][item[0]]) >= MIN_MENTION_LENGTH]
     
-    candidates = generateCandidates(textData, maxC)
+    candidates = generateCandidates(textData, maxC, True)
     
     if method == 'popular':
         wikified = wikifyPopular(textData, candidates)

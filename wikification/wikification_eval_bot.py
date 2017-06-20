@@ -40,7 +40,7 @@ datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')},
 datasets = [{'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')},{'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}]
 
 # 'popular', 'context1', 'context2', 'word2vec', 'coherence', 'tagme'
-methods = ['popular']
+methods = ['context2']
 
 if 'word2vec' in methods:
     try:
