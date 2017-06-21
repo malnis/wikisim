@@ -768,7 +768,7 @@ def bestContext1Match(mentionStr, context, candidates):
             
     return bestIndex # in case it was missed
 
-def bestContext2Match(context, candidates):
+def bestContext2Match(context, candidates, mentionStr):
     """
     Description:
         Uses Solr to find the candidate that gives the highest relevance when given the context.
@@ -781,6 +781,7 @@ def bestContext2Match(context, candidates):
     
     # put text in right format
     context = escapeStringSolr(context)
+    mentionStr = escapeStringSolr(mentionStr)
     strIds = ['entityid:' +  str(strId[0]) for strId in candidates]
     
     # dictionary to hold scores for each id
@@ -791,7 +792,7 @@ def bestContext2Match(context, candidates):
     # select all the docs from Solr with the best scores, highest first.
     addr = 'http://localhost:8983/solr/enwiki20160305_context/select'
     params={'fl':'entityid', 'fq':" ".join(strIds), 'indent':'on',
-            'q':'_context_:('+context.encode('utf-8')+')',
+            'q':'_context_:('+context.encode('utf-8')+') entity:(' + mentionStr.encode('utf-8') + ')^1',
             'wt':'json'}
     r = requests.get(addr, params = params)
     
@@ -903,7 +904,7 @@ def wikifyContext(textData, candidates, oText, useSentence = False, window = 7, 
             if method2 == False:
                 bestIndex = bestContext1Match(textData['text'][mention[0]], context, candidates[i])
             else:
-                bestIndex = bestContext2Match(context, candidates[i])
+                bestIndex = bestContext2Match(context, candidates[i], textData['text'][mention[0]])
             topCandidates.append([mention[1], mention[2], candidates[i][bestIndex][0]])
         i += 1 # move to list of candidates for next mention
         
