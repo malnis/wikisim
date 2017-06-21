@@ -36,7 +36,7 @@ datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':
 #datasets = [{'name':'wiki500', 'path':os.path.join(pathStrt,'wiki-mentions.500.json')}]
 
 # 'popular', 'context1', 'context2', 'word2vec', 'coherence', 'tagme'
-methods = ['popular', 'context2']
+methods = ['context2']
 
 if 'word2vec' in methods:
     try:
@@ -44,8 +44,8 @@ if 'word2vec' in methods:
     except:
         word2vec = gensim_loadmodel('/users/cs/amaral/cgmdir/WikipediaClean5Negative300Skip10.Ehsan/WikipediaClean5Negative300Skip10')
 
-doSplit = False
-doManual = True
+doSplit = True
+doManual = False
 
 verbose = True
 
@@ -88,6 +88,8 @@ for dataset in datasets:
             # get absolute text indexes and entity id of each given mention
             trueEntities = mentionStartsAndEnds(copy.deepcopy(line), forTruth = True) # the ground truth
             
+            oData = copy.deepcopy(line)
+            
             # get results for pre split string
             if doSplit and mthd <> 'tagme': # presplit no work on tagme
                 # original split string with mentions given
@@ -106,6 +108,15 @@ for dataset in datasets:
                 totalPrecS += precS
                 totalRecS += recS
                 totalF1S += f1S
+                
+                j = 0
+                for mention in oData['mentions']:
+                    try:
+                        print oData['text'][mention[0]].encode('utf-8') + ':  ' + mention[1] + ' --> ' + id2title(resultS[j][2])
+                    except:
+                        pass
+                    j += 1
+                
             else:
                 totalPrecS = 0
                 totalRecS = 0
@@ -131,7 +142,7 @@ for dataset in datasets:
                     f1M = 0
                 
                 if verbose:
-                    print 'Manual: ' + str(precM) + ', ' + str(recM) + str(f1M)
+                    print 'Manual: ' + str(precM) + ', ' + str(recM) + ', ' + str(f1M)
                     
                 # track results
                 totalPrecM += precM

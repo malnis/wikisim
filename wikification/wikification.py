@@ -371,11 +371,11 @@ def generateCandidates(textData, maxC, hybrid = False):
             
             if len(ctxStr) == 0:
                 params={'fl':'id', 'indent':'on', 'fq':" ".join(strIds),
-                        'q':'title:(' + mentionStr.encode('utf-8')+')^1.35',
+                        'q':'title:(' + mentionStr.encode('utf-8')+')^2.35',
                         'wt':'json'}
             else:
                 params={'fl':'id', 'indent':'on', 'fq':" ".join(strIds),
-                        'q':'title:(' + mentionStr.encode('utf-8') + ')^1.35'
+                        'q':'title:(' + mentionStr.encode('utf-8') + ')^2.35'
                         + ' text:(' + ctxStr.encode('utf-8') + ')',
                         'wt':'json'}
             
@@ -896,7 +896,8 @@ def wikifyContext(textData, candidates, oText, useSentence = False, window = 7, 
             if not useSentence:
                 context = getSurroundingWords(textData['text'], mention[0], window)
             else:
-                context = getMentionSentence(oText, mention)
+                #context = getMentionSentence(oText, mention)
+                context = getMentionsInSentence(textData, mention)
             #print '\nMention: ' + textData['text'][mention[0]]
             #print 'Context: ' + context
             if method2 == False:
