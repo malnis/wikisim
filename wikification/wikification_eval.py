@@ -44,8 +44,8 @@ if 'word2vec' in methods:
     except:
         word2vec = gensim_loadmodel('/users/cs/amaral/cgmdir/WikipediaClean5Negative300Skip10.Ehsan/WikipediaClean5Negative300Skip10')
 
-doSplit = True
-doManual = False
+doSplit = False
+doManual = True
 
 verbose = True
 
