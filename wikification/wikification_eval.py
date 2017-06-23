@@ -109,13 +109,13 @@ for dataset in datasets:
                 totalRecS += recS
                 totalF1S += f1S
                 
-                j = 0
+                """j = 0
                 for mention in oData['mentions']:
                     try:
                         print oData['text'][mention[0]].encode('utf-8') + ':  ' + mention[1] + ' --> ' + id2title(resultS[j][2])
                     except:
                         pass
-                    j += 1
+                    j += 1"""
                 
             else:
                 totalPrecS = 0
@@ -166,7 +166,7 @@ for dataset in datasets:
                                               }
 
 with open('/users/cs/amaral/wikisim/wikification/wikification_results.txt', 'a') as resultFile:
-    resultFile.write('\nmaxC: ' + str(maxCands) + '\n\n')
+    resultFile.write('\nmaxC: ' + str(maxCands) + '\n' + str(datetime.now()) + '\n\n')
     for dataset in datasets:
         resultFile.write(dataset['name'] + ':\n')
         for mthd in methods:

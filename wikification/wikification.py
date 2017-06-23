@@ -372,19 +372,19 @@ def generateCandidates(textData, maxC, hybrid = False):
             if len(ctxStr) == 0:
                 params={'fl':'id', 'indent':'on', 'fq':" ".join(strIds),
                         'q':'title:(' + mentionStr.encode('utf-8')+')^2.35',
-                        'wt':'json'}
+                        'wt':'json', 'rows':'ctxC'}
             else:
                 params={'fl':'id', 'indent':'on', 'fq':" ".join(strIds),
                         'q':'title:(' + mentionStr.encode('utf-8') + ')^2.35'
                         + ' text:(' + ctxStr.encode('utf-8') + ')',
-                        'wt':'json'}
+                        'wt':'json', 'rows':'ctxC'}
             
             r = requests.get(addr, params = params)
             try:
                 if ('response' in r.json() 
                         and 'docs' in r.json()['response']
                         and len(r.json()['response']['docs']) > 0):
-                    for doc in r.json()['response']['docs'][:ctxC]:
+                    for doc in r.json()['response']['docs']:
                         results.append((long(doc['id']), 0))
             except:
                 pass
@@ -1002,7 +1002,7 @@ def wikifyEval(text, mentionsGiven, maxC = 20, method='popular', strict = False)
     
     if method == 'popular':
         maxC = 1 # only need one cand for popular
-        
+    
     candidates = generateCandidates(textData, maxC, True)
     
     if method == 'popular':
@@ -1020,5 +1020,5 @@ def wikifyEval(text, mentionsGiven, maxC = 20, method='popular', strict = False)
     if strict:
         wikified = [item for item in wikified
                     if item[3] >= MIN_FREQUENCY]
-        
+    
     return wikified
