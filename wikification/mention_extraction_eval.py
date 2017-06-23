@@ -51,10 +51,10 @@ for dataset in datasets:
             print str(totalLines + 1)
 
         trueMentions = mentionStartsAndEnds(line, True)
-        #myMentions = mentionStartsAndEnds(mentionExtract(" ".join(line['text'])))
+        myMentions = mentionStartsAndEnds(mentionExtract(" ".join(line['text'])))
         
         # put in right format
-        """for mention in myMentions:
+        for mention in myMentions:
             mention[0] = mention[2]
             mention[1] = mention[3]
             
@@ -67,7 +67,6 @@ for dataset in datasets:
         
         if(verbose):
             print str(prec) + ' ' + str(rec) + ' ' + str(f1) + '\n'
-            print posDict
 
         # track results
         totalPrec += prec
@@ -78,28 +77,9 @@ for dataset in datasets:
     # record results for this method on this dataset
     performances[dataset['name']] = {'Precision':totalPrec/totalLines, 
                                      'Recall':totalRec/totalLines,
-                                     'F1':totalF1/totalLines}"""
-        totalLines += 1 # delet
-    
-with open('/users/cs/amaral/wikisim/wikification/mention_pos_Before.txt', 'w') as resultFile:
-    shleemies = ''
-    plumbusses = ''
-    for key in posDict['before']:
-        shleemies += key + '{'
-        plumbusses += str(posDict['before'][key]) + '{'
-        
-    resultFile.write(shleemies + '\n' + plumbusses)
-    
-with open('/users/cs/amaral/wikisim/wikification/mention_pos_After.txt', 'w') as resultFile:
-    shleemies = ''
-    plumbusses = ''
-    for key in posDict['after']:
-        shleemies += key + '{'
-        plumbusses += str(posDict['after'][key]) + '{'
-        
-    resultFile.write(shleemies + '\n' + plumbusses)
+                                     'F1':totalF1/totalLines}
             
-"""with open('/users/cs/amaral/wikisim/wikification/mention_extraction_results.txt', 'a') as resultFile:
+with open('/users/cs/amaral/wikisim/wikification/mention_extraction_results.txt', 'a') as resultFile:
     resultFile.write(str(datetime.now()) + '\n\n')
     for dataset in datasets:
         resultFile.write(dataset['name'] + ':\n')
@@ -109,4 +89,4 @@ with open('/users/cs/amaral/wikisim/wikification/mention_pos_After.txt', 'w') as
                    + '\n    Rec :' + str(performances[dataset['name']][mthd]['Recall'])
                    + '\n    F1 :' + str(performances[dataset['name']][mthd]['F1']) + '\n')
                 
-    resultFile.write('\n' + '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~' + '\n')"""
+    resultFile.write('\n' + '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~' + '\n')

@@ -18,8 +18,6 @@ from wsd.wsd import *
 MIN_MENTION_LENGTH = 3 # mentions must be at least this long
 MIN_FREQUENCY = 20 # anchor with frequency below is ignored
 
-posDict = {'before':{}, 'after':{}}
-
 def get_solr_count(s):
     """ Gets the number of documents the string occurs 
         NOTE: Multi words should be quoted
@@ -197,46 +195,6 @@ def mentionStartsAndEnds(textData, forTruth = False):
     Return:
         The mentions in the form [[wIndex, start, end],...]]. Or if forTruth is true: [[start,end,entityId]]
     """
-    
-    # delete this for sure
-    if forTruth:
-        poss = nltk.pos_tag(textData['text'])
-        i = 0
-        for mention in textData['mentions']:
-            i = mention[0]
-            """gitout = False
-            for mention in textData['mentions']:
-                if mention[0] == i:
-                    gitout = True
-                    break
-            if gitout:
-                i += 1
-                continue # word is a mention, skip it
-                """
-                
-            if i > 0:
-                try:
-                    posDict['before'][poss[i-1][1]] += 1
-                except:
-                    posDict['before'][poss[i-1][1]] = 1
-            else:
-                try:
-                    posDict['before']['NONE'] += 1
-                except:
-                    posDict['before']['NONE'] = 1
-                
-            if i < len(poss) - 1:
-                try:
-                    posDict['after'][poss[i+1][1]] += 1
-                except:
-                    posDict['after'][poss[i+1][1]] = 1
-            else:
-                try:
-                    posDict['after']['NONE'] += 1
-                except:
-                    posDict['after']['NONE'] = 1
-                
-            i += 1
     
     curWord = 0 
     curStart = 0
