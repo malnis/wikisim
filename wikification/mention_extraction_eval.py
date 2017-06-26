@@ -8,6 +8,7 @@ import requests
 import json
 import os
 from wikification import *
+from datetime import datetime
 
 pathStrt = '/users/cs/amaral/wsd-datasets'
 #pathStrt = 'C:\\Temp\\wsd-datasets'

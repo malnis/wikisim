@@ -18,6 +18,9 @@ from wsd.wsd import *
 MIN_MENTION_LENGTH = 3 # mentions must be at least this long
 MIN_FREQUENCY = 20 # anchor with frequency below is ignored
 
+with open('/users/cs/amaral/wikisim/wikification/pos-filter-out-nonmentions.txt', 'r') as srcFile:
+    posFilter = srcFile.read().splitlines()
+
 def get_solr_count(s):
     """ Gets the number of documents the string occurs 
         NOTE: Multi words should be quoted
@@ -263,17 +266,30 @@ def mentionExtract(text):
     for item in textData:
         postrs.append(item[2])
     postrs = nltk.pos_tag(postrs)
-    #print postrs
+    
     for i in range(0,len(textData)):
         textData[i].append(postrs[i]) # [5][1] is index of type of word
     
     mentionPThrsh = 0.001 # for getting rid of unlikelies
     
     # put in only good mentions
+    i = 0
     for item in textData:
+        if i == 0:
+            bef = 'NONE'
+        else:
+            bef = textData[i-1][5][1] # pos tag of before
+        if i == len(textData) - 1:
+            aft = 'NONE'
+        else:
+            aft = textData[i+1][5][1] # pos tag of after
+        befaft = " : ".join([bef,aft])
+        
         if (item[3] >= mentionPThrsh # if popular enough, and either some type of noun or JJ or CD
-                and (item[5][1][0:2] == 'NN' or item[5][1] == 'JJ' or item[5][1] == 'CD')):
+                and (item[5][1][0:2] == 'NN' or item[5][1] == 'JJ' or item[5][1] == 'CD')
+                and befaft not in posFilter):
             mentions.append([item[4], item[0], item[1]]) # wIndex, start, end
+        i += 1
     
     # get in same format as dataset provided data
     newTextData = {'text':splitText, 'mentions':mentions}
