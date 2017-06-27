@@ -887,8 +887,6 @@ def wikifyPopular(textData, candidates):
     for mention in textData['mentions']:
         if len(candidates[i]) > 0:
             topCandidates.append([mention[1], mention[2], candidates[i][0][0]])
-        else:
-            topCandidates.append([mention[1], mention[2], 0])
         i += 1 # move to list of candidates for next mention
             
     return topCandidates
@@ -924,8 +922,6 @@ def wikifyContext(textData, candidates, oText, useSentence = False, window = 7, 
             else:
                 bestIndex = bestContext2Match(context, candidates[i], textData['text'][mention[0]])
             topCandidates.append([mention[1], mention[2], candidates[i][bestIndex][0]])
-        else:
-            topCandidates.append([mention[1], mention[2], 0])
         i += 1 # move to list of candidates for next mention
         
     return topCandidates
@@ -957,8 +953,6 @@ def wikifyWord2Vec(textData, candidates, oText, useSentence = False, window = 5)
             #print 'Context: ' + " ".join(context)
             bestIndex = bestWord2VecMatch(context, candidates[i])
             topCandidates.append([mention[1], mention[2], candidates[i][bestIndex][0]])
-        else:
-            topCandidates.append([mention[1], mention[2], 0])
         i += 1 # move to list of candidates for next mention
         
     return topCandidates
@@ -994,7 +988,7 @@ def wikifyCoherence(textData, candidates, ws = 5):
             
     return topCands
 
-def wikifyEval(text, mentionsGiven, maxC = 20, method='popular', strict = False):
+def wikifyEval(text, mentionsGiven, maxC = 20, method='popular', strict = False, hybridC = True):
     """
     Description:
         Takes the text (maybe text data), and wikifies it for evaluation purposes using the desired method.
@@ -1005,6 +999,7 @@ def wikifyEval(text, mentionsGiven, maxC = 20, method='popular', strict = False)
         maxC: The max amount of candidates to extract.
         method: The method used to wikify.
         strict: Whether to use such rules as minimum metion length, or minimum frequency of concept.
+        hybridC: Whether to split generated candidates between best of most frequent of most context related.
     Return:
         All of the proposed entities for the mentions, of the form: [[start,end,entityId],...].
     """
@@ -1025,7 +1020,7 @@ def wikifyEval(text, mentionsGiven, maxC = 20, method='popular', strict = False)
     if method == 'popular':
         maxC = 1 # only need one cand for popular
     
-    candidates = generateCandidates(textData, maxC, True)
+    candidates = generateCandidates(textData, maxC, hybridC)
     
     if method == 'popular':
         wikified = wikifyPopular(textData, candidates)

@@ -695,3 +695,5 @@ PRP$ : EX
 NNP : DT
 NN : DT
 NNP : CD
+CD : CD
+NNP : NONE
