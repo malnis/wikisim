@@ -286,8 +286,7 @@ def mentionExtract(text):
         befaft = " : ".join([bef,aft])
         
         if (item[3] >= mentionPThrsh # if popular enough, and either some type of noun or JJ or CD
-                and (item[5][1][0:2] == 'NN' or item[5][1] == 'JJ' or item[5][1] == 'CD')
-                and befaft not in posFilter):
+                and (item[5][1][0:2] == 'NN' or item[5][1] == 'JJ' or item[5][1] == 'CD')):
             mentions.append([item[4], item[0], item[1]]) # wIndex, start, end
         i += 1
     
@@ -888,6 +887,8 @@ def wikifyPopular(textData, candidates):
     for mention in textData['mentions']:
         if len(candidates[i]) > 0:
             topCandidates.append([mention[1], mention[2], candidates[i][0][0]])
+        else:
+            topCandidates.append([mention[1], mention[2], 0])
         i += 1 # move to list of candidates for next mention
             
     return topCandidates
@@ -923,6 +924,8 @@ def wikifyContext(textData, candidates, oText, useSentence = False, window = 7, 
             else:
                 bestIndex = bestContext2Match(context, candidates[i], textData['text'][mention[0]])
             topCandidates.append([mention[1], mention[2], candidates[i][bestIndex][0]])
+        else:
+            topCandidates.append([mention[1], mention[2], 0])
         i += 1 # move to list of candidates for next mention
         
     return topCandidates
@@ -954,6 +957,8 @@ def wikifyWord2Vec(textData, candidates, oText, useSentence = False, window = 5)
             #print 'Context: ' + " ".join(context)
             bestIndex = bestWord2VecMatch(context, candidates[i])
             topCandidates.append([mention[1], mention[2], candidates[i][bestIndex][0]])
+        else:
+            topCandidates.append([mention[1], mention[2], 0])
         i += 1 # move to list of candidates for next mention
         
     return topCandidates
