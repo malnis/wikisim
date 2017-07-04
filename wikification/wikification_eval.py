@@ -36,7 +36,7 @@ datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':
 #datasets = [{'name':'wiki500', 'path':os.path.join(pathStrt,'wiki-mentions.500.json')}]
 
 # 'popular', 'context1', 'context2', 'word2vec', 'coherence', 'tagme'
-methods = ['context2']
+methods = ['popular','context1','context2','word2vec','coherence','tagme']
 
 if 'word2vec' in methods:
     try:

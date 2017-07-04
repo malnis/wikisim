@@ -388,12 +388,12 @@ def generateCandidates(textData, maxC, hybrid = False):
             if len(ctxStr) == 0:
                 params={'fl':'id', 'indent':'on', 'fq':" ".join(strIds),
                         'q':'title:(' + mentionStr.encode('utf-8')+')^2.35',
-                        'wt':'json', 'rows':'ctxC'}
+                        'wt':'json', 'rows': str(ctxC)}
             else:
                 params={'fl':'id', 'indent':'on', 'fq':" ".join(strIds),
                         'q':'title:(' + mentionStr.encode('utf-8') + ')^2.35'
                         + ' text:(' + ctxStr.encode('utf-8') + ')',
-                        'wt':'json', 'rows':'ctxC'}
+                        'wt':'json', 'rows':str(ctxC)}
             
             r = requests.get(addr, params = params)
             try:
@@ -1020,7 +1020,7 @@ def wikifyEval(text, mentionsGiven, maxC = 20, method='popular', strict = False,
     if method == 'popular':
         maxC = 1 # only need one cand for popular
     
-    candidates = generateCandidates(textData, maxC, hybridC)
+    candidates = generateCandidates(textData, maxC, False) # make hybridC after)
     
     if method == 'popular':
         wikified = wikifyPopular(textData, candidates)
