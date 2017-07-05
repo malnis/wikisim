@@ -103,6 +103,8 @@ class ListNet(NNfuncs.NN):
         y_score = y_score.ravel()
         y_true_sorted = sorted(y_true, reverse=True)
         ideal_dcg = 0
+        if k > len(y_true_sorted):
+            k = len(y_true_sorted)
         for i in range(k):
             ideal_dcg += (2 ** y_true_sorted[i] - 1.) / np.log2(i + 2)
         dcg = 0

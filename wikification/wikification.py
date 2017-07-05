@@ -367,7 +367,7 @@ def generateCandidates(textData, maxC, hybrid = False):
                           reverse = True)[:popC]
         
         # get the right amount to fill with context 
-        if len(results) < popC:
+        if len(results) < popC and hybrid == True:
             # fill in rest with context
             ctxC = maxC - len(results)
         elif hybrid == True:
@@ -387,11 +387,11 @@ def generateCandidates(textData, maxC, hybrid = False):
             
             if len(ctxStr) == 0:
                 params={'fl':'id', 'indent':'on', 'fq':" ".join(strIds),
-                        'q':'title:(' + mentionStr.encode('utf-8')+')^2.35',
+                        'q':'title:(' + mentionStr.encode('utf-8')+')^5',
                         'wt':'json', 'rows': str(ctxC)}
             else:
                 params={'fl':'id', 'indent':'on', 'fq':" ".join(strIds),
-                        'q':'title:(' + mentionStr.encode('utf-8') + ')^2.35'
+                        'q':'title:(' + mentionStr.encode('utf-8') + ')^5'
                         + ' text:(' + ctxStr.encode('utf-8') + ')',
                         'wt':'json', 'rows':str(ctxC)}
             
@@ -988,6 +988,9 @@ def wikifyCoherence(textData, candidates, ws = 5):
             
     return topCands
 
+def wikifyMulti(textData, candidates, oText, useSentence = True, window = 7):
+    pass
+
 def wikifyEval(text, mentionsGiven, maxC = 20, method='popular', strict = False, hybridC = True):
     """
     Description:
@@ -1020,7 +1023,7 @@ def wikifyEval(text, mentionsGiven, maxC = 20, method='popular', strict = False,
     if method == 'popular':
         maxC = 1 # only need one cand for popular
     
-    candidates = generateCandidates(textData, maxC, False) # make hybridC after)
+    candidates = generateCandidates(textData, maxC, hybridC)
     
     if method == 'popular':
         wikified = wikifyPopular(textData, candidates)
@@ -1032,6 +1035,8 @@ def wikifyEval(text, mentionsGiven, maxC = 20, method='popular', strict = False,
         wikified = wikifyWord2Vec(textData, candidates, oText, useSentence = False, window = 5)
     elif method == 'coherence':
         wikified = wikifyCoherence(textData, candidates, ws = 5)
+    elif method == 'multi':
+        wikified = wikifyMulti(textData, candidates, oText, useSentence = True, window = 7)
     
     # get rid of very unpopular mentions
     if strict:
