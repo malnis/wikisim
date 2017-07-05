@@ -350,7 +350,8 @@ def generateCandidates(textData, maxC, hybrid = False):
         maxC: The max amount of candidates to accept.
         Hybrid: Whether to include best context fitting results too.
     Return:
-        The top maxC candidates for each possible mention word in textData.
+        The top maxC candidates for each possible mention word in textData. Each 
+        mentions has its candidates of the form: [(wikiId, popularity),...]
     """
     
     candidates = []
