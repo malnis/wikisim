@@ -735,6 +735,51 @@ def escapeStringSolr(text):
     
     return text
 
+def getContext1Scores(mentionStr, context, candidates):
+    """
+    Description:
+        Uses Solr to find the relevancy scores of the candidates based on the context.
+    Args:
+        mentionStr: The mention as it appears in the text
+        context: The words that surround the target word.
+        candidates: A list of candidates that each have the entity id and its frequency/popularity.
+    Return:
+        The score for each candidate in the same order as the candidates.
+    """
+    
+    candScores = []
+    for i in range(len(candidates)):
+        candScores.append(0)
+    
+    # put text in right format
+    context = escapeStringSolr(context)
+    mentionStr = escapeStringSolr(mentionStr)
+    
+    strIds = ['id:' +  str(strId[0]) for strId in candidates]
+    
+    # select all the docs from Solr with the best scores, highest first.
+    addr = 'http://localhost:8983/solr/enwiki20160305/select'
+    params={'fl':'id score', 'fq':" ".join(strIds), 'indent':'on',
+            'q':'text:('+context.encode('utf-8')+')^1 title:(' + mentionStr.encode('utf-8')+')^1.35',
+            'wt':'json'}
+    r = requests.get(addr, params = params)
+    
+    try:
+        # assign the scores
+        for doc in r.json()['response']['docs']:
+            # find candidate of doc
+            i = 0
+            for cand in candidates:
+                if cand[0] == long(doc['id']):
+                    candScores[i] = doc['score']
+                    break
+                i += 1
+    except:
+        # keep zero scores
+        pass
+            
+    return candScores
+
 def bestContext1Match(mentionStr, context, candidates):
     """
     Description:
@@ -785,7 +830,55 @@ def bestContext1Match(mentionStr, context, candidates):
             
     return bestIndex # in case it was missed
 
-def bestContext2Match(context, candidates, mentionStr):
+def getContext2Scores(mentionStr, context, candidates):
+    """
+    Description:
+        Uses Solr to find the relevancy scores of the candidates based on the context.
+    Args:
+        mentionStr: The mention as it appears in the text
+        context: The words that surround the target word.
+        candidates: A list of candidates that each have the entity id and its frequency/popularity.
+    Return:
+        The score for each candidate in the same order as the candidates.
+    """
+    
+    candScores = []
+    for i in range(len(candidates)):
+        candScores.append(0)
+    
+    # put text in right format
+    context = escapeStringSolr(context)
+    mentionStr = escapeStringSolr(mentionStr)
+    
+    strIds = ['entityid:' +  str(strId[0]) for strId in candidates]
+    
+    # dictionary to hold scores for each id
+    scoreDict = {}
+    for cand in candidates:
+        scoreDict[str(cand[0])] = 0
+    
+    # select all the docs from Solr with the best scores, highest first.
+    addr = 'http://localhost:8983/solr/enwiki20160305_context/select'
+    params={'fl':'entityid', 'fq':" ".join(strIds), 'indent':'on',
+            'q':'_context_:('+context.encode('utf-8')+') entity:(' + mentionStr.encode('utf-8') + ')^1',
+            'wt':'json'}
+    r = requests.get(addr, params = params)
+    
+    try:
+        # get count for each id
+        for doc in r.json()['response']['docs']:
+            scoreDict[str(doc['entityid'])] += 1
+    except:
+        # keep zero scores
+        pass
+    
+    # give scores to each cand
+    for j in range(0, len(candidates)):
+        candScores[j] = scoreDict[str(candidates[j][0])]
+            
+    return candScores
+
+def bestContext2Match(mentionStr, context, candidates):
     """
     Description:
         Uses Solr to find the candidate that gives the highest relevance when given the context.
@@ -837,6 +930,38 @@ def bestContext2Match(context, candidates, mentionStr):
         curIndex += 1
             
     return bestIndex
+
+def getWord2VecScores(context, candidates):
+    """
+    Description:
+        Uses word2vec to find the similarity scores of each mention to the context vector.
+    Args:
+        context: The words that surround the target word as a list.
+        candidates: A list of candidates that each have the entity id and its frequency/popularity.
+    Return:
+        The scores of eac candidate.
+    """
+    
+    candScores = []
+    for i in range(len(candidates)):
+        candScores.append(0)
+        
+    ctxVec = pd.Series(sp.zeros(300)) # default zero vector
+    # add all context words together
+    for word in context:
+        ctxVec += getword2vector(word)
+        
+    # compare context vector to each of the candidates
+    i = 0
+    for cand in candidates:
+        eVec = getentity2vector(str(cand[0]))
+        score = 1-sp.spatial.distance.cosine(ctxVec, eVec)
+        if math.isnan(score):
+            score = 0
+        candScores[i] = score
+        i += 1 # next index
+        
+    return candScores
 
 def bestWord2VecMatch(context, candidates):
     """
@@ -921,7 +1046,7 @@ def wikifyContext(textData, candidates, oText, useSentence = False, window = 7, 
             if method2 == False:
                 bestIndex = bestContext1Match(textData['text'][mention[0]], context, candidates[i])
             else:
-                bestIndex = bestContext2Match(context, candidates[i], textData['text'][mention[0]])
+                bestIndex = bestContext2Match(textData['text'][mention[0]], context, candidates[i])
             topCandidates.append([mention[1], mention[2], candidates[i][bestIndex][0]])
         i += 1 # move to list of candidates for next mention
         
