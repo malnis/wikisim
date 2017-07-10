@@ -1362,3 +1362,72 @@ tagme:
     M F1 :0.201790033714
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+maxC: 20
+2017-07-10 14:26:26.963883
+
+Using LambdaMart learning to rank algorithm, pop only candidate generation.
+
+kore:
+multi:
+    S Prec :0.559666666667
+    S Rec :0.553
+    S F1 :0.555666666667
+AQUAINT:
+multi:
+    S Prec :0.854609843784
+    S Rec :0.810066414411
+    S F1 :0.830738407613
+MSNBC:
+multi:
+    S Prec :0.79404708758
+    S Rec :0.75239510721
+    S F1 :0.771769687499
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+maxC: 20
+2017-07-10 14:41:58.386170
+
+Using Gradient Boosting Regression algorithm, pop only cand gen.
+
+kore:
+multi:
+    S Prec :0.538666666667
+    S Rec :0.532
+    S F1 :0.534666666667
+AQUAINT:
+multi:
+    S Prec :0.860721820922
+    S Rec :0.816654465391
+    S F1 :0.837115339657
+MSNBC:
+multi:
+    S Prec :0.759023519816
+    S Rec :0.719599470256
+    S F1 :0.737947417999
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+maxC: 20
+2017-07-10 15:05:19.202772
+
+Using Extra Trees Regression algorithm, pop only cand gen.
+
+kore:
+multi:
+    S Prec :0.530666666667
+    S Rec :0.524
+    S F1 :0.526666666667
+AQUAINT:
+multi:
+    S Prec :0.856040142981
+    S Rec :0.811294557184
+    S F1 :0.832065676759
+MSNBC:
+multi:
+    S Prec :0.767560596728
+    S Rec :0.728002991693
+    S F1 :0.746416518531
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -1,6 +1,13 @@
 
 from __future__ import division
 import sys
+import pickle
+from sklearn.ensemble import ExtraTreesRegressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.ensemble import GradientBoostingClassifier
+sys.path.append('./pyltr/')
+import pyltr
 sys.path.append('../wikisim/')
 from wikipedia import *
 from operator import itemgetter
@@ -14,6 +21,7 @@ import scipy.sparse.linalg
 from calcsim import *
 sys.path.append('../')
 from wsd.wsd import *
+import numpy as np
 
 MIN_MENTION_LENGTH = 3 # mentions must be at least this long
 MIN_FREQUENCY = 20 # anchor with frequency below is ignored
@@ -76,6 +84,18 @@ def mentionProb(text):
         return 0 # a mention never used probably is not a good link
     else:
         return totalMentions/totalAppearances
+    
+def normalize(nums):
+    """Normalizes a list of nums to its sum + 1"""
+    
+    numSum = sum(nums) + 1 # get max
+    
+    # fill with normalized
+    normNums = []
+    for num in nums:
+        normNums.append(num/numSum)
+        
+    return normNums
 
 def destroyExclusiveOverlaps(textData):
     """
@@ -364,8 +384,9 @@ def generateCandidates(textData, maxC, hybrid = False):
         popC = maxC
     
     for mention in textData['mentions']:
-        results = sorted(anchor2concept(textData['text'][mention[0]]), key = itemgetter(1), 
+        resultT = sorted(anchor2concept(textData['text'][mention[0]]), key = itemgetter(1), 
                           reverse = True)[:popC]
+        results = [list(item) for item in resultT]
         
         # get the right amount to fill with context 
         if len(results) < popC and hybrid == True:
@@ -402,7 +423,15 @@ def generateCandidates(textData, maxC, hybrid = False):
                         and 'docs' in r.json()['response']
                         and len(r.json()['response']['docs']) > 0):
                     for doc in r.json()['response']['docs']:
-                        results.append((long(doc['id']), 0))
+                        # get popularity of entity given the mention
+                        popularity = 0
+                        thingys = anchor2concept(textData['text'][mention[0]])
+                        for thingy in thingys:
+                            if thingy[0] == long(doc['id']):
+                                popularity = thingy[1]
+                                break
+                        
+                        results.append([long(doc['id']), popularity])
             except:
                 pass
             
@@ -1114,10 +1143,117 @@ def wikifyCoherence(textData, candidates, ws = 5):
             
     return topCands
 
-def wikifyMulti(textData, candidates, oText, useSentence = True, window = 7):
-    pass
+mlModels = {} # dictionary of different models
+mlModelFiles = {
+    'gbc': '/users/cs/amaral/wikisim/wikification/ml-models/model-gbc-1.pkl',
+    'etr': '/users/cs/amaral/wikisim/wikification/ml-models/model-etr-1.pkl',
+    'gbr': '/users/cs/amaral/wikisim/wikification/ml-models/model-gbr-1.pkl',
+    'lmart': '/users/cs/amaral/wikisim/wikification/ml-models/model-lmart-1.pkl',
+    'rfr': '/users/cs/amaral/wikisim/wikification/ml-models/model-rfr-1.pkl'}
 
-def wikifyEval(text, mentionsGiven, maxC = 20, method='popular', strict = False, hybridC = True):
+def wikifyMulti(textData, candidates, oText, model, useSentence = True, window = 7):
+    """
+    Description:
+        Disambiguates each of the mentions with their given candidates using the desired
+        machine learned model.
+    Args:
+        textData: A textData in split form along with its suspected mentions.
+        candidates: A list of candidates that each have the entity id and its frequency/popularity.
+        oText: The original text, unsplit.
+        model: The machine learned model to use for disambiguation: 
+            'gbc' (gradient boosted classifier), 'etr' (extra trees regression), 
+            'gbr' (gradient boosted regression), 'lmart' (LambdaMART (a learning to rank method)),
+            and 'rfr' (random forest regression).
+        useSentence: Whether to use windo size of sentence (for context methods)
+        window: How many words on both sides of a mention to search for context.
+    Return:
+        All of the proposed entities for the mentions, of the form: [[start,end,entityId],...].
+    """
+    
+    mlModel = mlModels[model] # get reference to model
+    
+    # get score from coherence
+    cohScores = coherence_scores_driver(candidates, 5, method='rvspagerank', direction=DIR_BOTH, op_method="keydisamb")
+    
+    i = 0
+    # get scores from each disambiguation method for all mentions
+    for mention in textData['mentions']:
+        if len(candidates[i]) > -1: # stub
+            # get the scores from each basic method.
+            
+            # normalize popularity scores
+            cScrs = []
+            for cand in candidates[i]:
+                cScrs.append(cand[1])
+            cScrs = normalize(cScrs)
+            j = 0
+            for cand in candidates[i]:
+                cand[1] = cScrs[j]
+                j += 1
+            
+            contextMInS = getMentionsInSentence(textData, textData['mentions'][i])
+            contextS = getMentionSentence(oText, textData['mentions'][i], asList = True)
+            
+            # context 1 scores
+            cScrs = getContext1Scores(textData['text'][mention[0]], contextMInS, candidates[i])
+            cScrs = normalize(cScrs)
+            # apply score to candList
+            for j in range(0, len(candidates[i])):
+                candidates[i][j].append(cScrs[j])
+            
+            # context 2 scores
+            cScrs = getContext2Scores(textData['text'][mention[0]], contextMInS, candidates[i])
+            cScrs = normalize(cScrs)
+            # apply score to candList
+            for j in range(0, len(candidates[i])):
+                candidates[i][j].append(cScrs[j])
+
+            # get score form word2vec
+            cScrs = getWord2VecScores(contextS, candidates[i])
+            #cScrs = normalize(cScrs)
+            # apply score to candList
+            for j in range(0, len(candidates[i])):
+                candidates[i][j].append(cScrs[j])
+
+            # get score from coherence
+            for j in range(0, len(candidates[i])):
+                candidates[i][j].append(cohScores[i][j])
+            
+        i += 1
+    
+    topCandidates = []
+    
+    i = 0
+    # go through all mentions again to disambiguate with ml model
+    for mention in textData['mentions']:
+        try:
+            Xs = [cand[1:] for cand in candidates[i]]
+            if len(Xs) == 0:
+                i += 1
+                continue
+            pred = mlModel.predict(Xs)
+        except:
+            try:
+                Xs = [cand[1:] for cand in candidates[i]]
+                pred = mlModel.predict(np.array(candidates[i][1:]).reshape(1, -1))
+            except:
+                i += 1
+                continue
+        cur = 0
+        best = 0
+        bestI = 0
+        for j in range(len(pred)):
+            if pred[j] > best:
+                best = pred[j]
+                bestI = j
+        
+        topCandidates.append([mention[1], mention[2], candidates[i][bestI][0]])
+        
+        i += 1
+        
+    return topCandidates
+
+def wikifyEval(text, mentionsGiven, maxC = 20, method='popular', strict = False, hybridC = True, model = 'lmart'):
     """
     Description:
         Takes the text (maybe text data), and wikifies it for evaluation purposes using the desired method.
@@ -1129,6 +1265,9 @@ def wikifyEval(text, mentionsGiven, maxC = 20, method='popular', strict = False,
         method: The method used to wikify.
         strict: Whether to use such rules as minimum metion length, or minimum frequency of concept.
         hybridC: Whether to split generated candidates between best of most frequent of most context related.
+        model: What model to use if using machine learning based method. LambdaMART as 'lmart' is default.
+            Other options are: 'gbc' (gradient boosted classifier), 'etr' (extra trees regression), 
+            'gbr' (gradient boosted regression), and 'rfr' (random forest regression).
     Return:
         All of the proposed entities for the mentions, of the form: [[start,end,entityId],...].
     """
@@ -1162,7 +1301,9 @@ def wikifyEval(text, mentionsGiven, maxC = 20, method='popular', strict = False,
     elif method == 'coherence':
         wikified = wikifyCoherence(textData, candidates, ws = 5)
     elif method == 'multi':
-        wikified = wikifyMulti(textData, candidates, oText, useSentence = True, window = 7)
+        if model not in mlModels:
+            mlModels[model] = pickle.load(open(mlModelFiles[model], 'rb'))
+        wikified = wikifyMulti(textData, candidates, oText, model, useSentence = True, window = 7)
     
     # get rid of very unpopular mentions
     if strict:

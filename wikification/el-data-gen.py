@@ -1,7 +1,7 @@
 
 """
 This file/cell is to generate training data for entity linking for a supervised model.
-Each row has form: (id, isTrueEntity, popularity, context1, context2, word2vec, coherence)
+Each row has form: (id, isTrueEntity, popularity, context1, context2, word2vec, coherence, mentionId)
 """
 
 from __future__ import division
@@ -50,6 +50,8 @@ except:
 print 'word2vec loaded'
     
 f = 0
+
+mNum = 0
 # see each line
 for line in dataLines:
     
@@ -58,7 +60,7 @@ for line in dataLines:
     
     line['mentions'] = mentionStartsAndEnds(line)
     # get what should be all candidates
-    candidates = generateCandidates(line, 999, False)
+    candidates = generateCandidates(line, 999, True)
     
     i = 0
     for i in range(0, len(candidates)):
@@ -129,14 +131,20 @@ for line in dataLines:
         for j in range(0, len(candList)):
             candList[j].append(cohScores[i][j])
             
+        # put the mention id
+        for j in range(len(candList)):
+            candList[j].append(mNum)
+            
         allCands.append(candList)
+        
+        mNum += 1
         
         i += 1
     f += 1
     print 'Line: ' + str(f)
         
 
-with open('/users/cs/amaral/wikisim/wikification/learning-data/el-5000.txt', 'w') as f:
+with open('/users/cs/amaral/wikisim/wikification/learning-data/el-5000-hybridgen.txt', 'w') as f:
     for thing in allCands:
         for thingy in thing:
             f.write(str(thingy)[1:-1] + '\n')

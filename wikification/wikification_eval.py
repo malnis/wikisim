@@ -28,24 +28,26 @@ datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')},
 #datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}]
 #datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}]
 #datasets = [{'name':'wiki5000', 'path':os.path.join(pathStrt,'wiki-mentions.5000.json')}]
-#datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')}]
+datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')}]
 #datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')},{'name':'wiki500', 'path':os.path.join(pathStrt,'wiki-mentions.500.json')}]
 #datasets = [{'name':'nopop', 'path':os.path.join(pathStrt,'nopop.json')}]
-datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')},{'name':'wiki500', 'path':os.path.join(pathStrt,'wiki-mentions.500.json')},{'name':'nopop', 'path':os.path.join(pathStrt,'nopop.json')}]
+#datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')},{'name':'wiki500', 'path':os.path.join(pathStrt,'wiki-mentions.500.json')},{'name':'nopop', 'path':os.path.join(pathStrt,'nopop.json')}]
 #datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')},{'name':'wiki5000', 'path':os.path.join(pathStrt,'wiki-mentions.5000.json')},{'name':'nopop', 'path':os.path.join(pathStrt,'nopop.json')}]
 #datasets = [{'name':'wiki500', 'path':os.path.join(pathStrt,'wiki-mentions.500.json')}]
 
-# 'popular', 'context1', 'context2', 'word2vec', 'coherence', 'tagme'
-methods = ['popular', 'context1', 'context2', 'word2vec', 'coherence', 'tagme']
+# 'popular', 'context1', 'context2', 'word2vec', 'coherence', 'tagme', 'multi'
+methods = ['multi']
+# 'lmart', 'gbr', 'etr', 'rfr'
+mlModel = 'rfr'
 
-if 'word2vec' in methods:
+if 'word2vec' in methods or 'multi' in methods:
     try:
         word2vec
     except:
         word2vec = gensim_loadmodel('/users/cs/amaral/cgmdir/WikipediaClean5Negative300Skip10.Ehsan/WikipediaClean5Negative300Skip10')
 
 doSplit = True
-doManual = True
+doManual = False
 
 verbose = True
 
@@ -93,7 +95,7 @@ for dataset in datasets:
             # get results for pre split string
             if doSplit and mthd <> 'tagme': # presplit no work on tagme
                 # original split string with mentions given
-                resultS = wikifyEval(copy.deepcopy(line), True, maxC = maxCands, method = mthd)
+                resultS = wikifyEval(copy.deepcopy(line), True, hybridC = False, maxC = maxCands, method = mthd, model = mlModel)
                 precS = precision(trueEntities, resultS) # precision of pre-split
                 recS = recall(trueEntities, resultS) # recall of pre-split
                 try:
@@ -167,6 +169,7 @@ for dataset in datasets:
 
 with open('/users/cs/amaral/wikisim/wikification/wikification_results.txt', 'a') as resultFile:
     resultFile.write('\nmaxC: ' + str(maxCands) + '\n' + str(datetime.now()) + '\n\n')
+    resultFile.write('Using Random Forest Regression algorithm, pop only cand gen.\n\n')
     for dataset in datasets:
         resultFile.write(dataset['name'] + ':\n')
         for mthd in methods:
