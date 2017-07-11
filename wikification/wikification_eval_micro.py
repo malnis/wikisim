@@ -36,9 +36,9 @@ datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':
 #datasets = [{'name':'wiki500', 'path':os.path.join(pathStrt,'wiki-mentions.500.json')}]
 
 # 'popular', 'context1', 'context2', 'word2vec', 'coherence', 'tagme'
-methods = ['popular', 'context2', 'coherence']
+methods = ['lmart', 'gbr', 'etr', 'rfr']
 
-if 'word2vec' in methods:
+if 'word2vec' in methods or 'multi' in methods or True:
     try:
         word2vec
     except:
@@ -92,7 +92,7 @@ for dataset in datasets:
             # get results for pre split string
             if doSplit and mthd <> 'tagme': # presplit no work on tagme
                 # original split string with mentions given
-                resultS = wikifyEval(copy.deepcopy(line), True, maxC = maxCands, method = mthd)
+                resultS = wikifyEval(copy.deepcopy(line), True, maxC = maxCands, method = 'multi', hybridC = False, model = mthd)
                 totalRightS += precision(trueEntities, resultS) * len(trueEntities)
                 
                 if verbose:

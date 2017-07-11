@@ -25,7 +25,7 @@ def normalize(nums):
     return normNums
 
 pathStrt = '/users/cs/amaral/wsd-datasets'
-dsPath = os.path.join(pathStrt,'wiki-mentions.5000.json')
+dsPath = os.path.join(pathStrt,'wiki-mentions.30000.json')
 
 with open(dsPath, 'r') as dataFile:
     dataLines = []
@@ -33,7 +33,7 @@ with open(dsPath, 'r') as dataFile:
     for line in dataFile:
         dataLines.append(json.loads(line.decode('utf-8').strip()))
         i += 1
-        if i > 5000:
+        if i > 10000:
             break
         
 cPerM = 20 # candidates per mention
@@ -144,7 +144,7 @@ for line in dataLines:
     print 'Line: ' + str(f)
         
 
-with open('/users/cs/amaral/wikisim/wikification/learning-data/el-5000-hybridgen.txt', 'w') as f:
+with open('/users/cs/amaral/wikisim/wikification/learning-data/el-10000-hybridgen.txt', 'w') as f:
     for thing in allCands:
         for thingy in thing:
             f.write(str(thingy)[1:-1] + '\n')

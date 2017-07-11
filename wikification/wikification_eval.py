@@ -36,11 +36,12 @@ datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':
 #datasets = [{'name':'wiki500', 'path':os.path.join(pathStrt,'wiki-mentions.500.json')}]
 
 # 'popular', 'context1', 'context2', 'word2vec', 'coherence', 'tagme', 'multi'
-methods = ['multi']
+#methods = ['multi']
+methods = ['lmart', 'gbr', 'etr', 'rfr']
 # 'lmart', 'gbr', 'etr', 'rfr'
-mlModel = 'rfr'
+mlModels = 'lmart'
 
-if 'word2vec' in methods or 'multi' in methods:
+if 'word2vec' in methods or 'multi' in methods or True:
     try:
         word2vec
     except:
@@ -95,7 +96,7 @@ for dataset in datasets:
             # get results for pre split string
             if doSplit and mthd <> 'tagme': # presplit no work on tagme
                 # original split string with mentions given
-                resultS = wikifyEval(copy.deepcopy(line), True, hybridC = False, maxC = maxCands, method = mthd, model = mlModel)
+                resultS = wikifyEval(copy.deepcopy(line), True, hybridC = True, maxC = maxCands, method = 'multi', model = mthd)
                 precS = precision(trueEntities, resultS) # precision of pre-split
                 recS = recall(trueEntities, resultS) # recall of pre-split
                 try:
@@ -169,7 +170,7 @@ for dataset in datasets:
 
 with open('/users/cs/amaral/wikisim/wikification/wikification_results.txt', 'a') as resultFile:
     resultFile.write('\nmaxC: ' + str(maxCands) + '\n' + str(datetime.now()) + '\n\n')
-    resultFile.write('Using Random Forest Regression algorithm, pop only cand gen.\n\n')
+    resultFile.write('Doing hybrid candidate generation before hybrid training.\n\n')
     for dataset in datasets:
         resultFile.write(dataset['name'] + ':\n')
         for mthd in methods:
