@@ -37,7 +37,7 @@ datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':
 
 # 'popular', 'context1', 'context2', 'word2vec', 'coherence', 'tagme', 'multi'
 #methods = ['multi']
-methods = ['lmart', 'gbr', 'etr', 'rfr']
+methods = ['abc', 'bgc', 'etc', 'gbc', 'rfc', 'lsvc', 'svc', 'lmart']
 # 'lmart', 'gbr', 'etr', 'rfr'
 mlModels = 'lmart'
 

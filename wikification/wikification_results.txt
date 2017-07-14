@@ -1560,3 +1560,613 @@ rfr:
     S Micro F1 :0.707914610084
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+maxC: 20
+2017-07-13 01:18:37.167456
+
+Doing popular candidate generation with popular trained models.
+
+kore:
+abc:
+    S Micro F1 :0.478873239437
+bgc:
+    S Micro F1 :0.471830985915
+etc:
+    S Micro F1 :0.485915492958
+gbc:
+    S Micro F1 :0.507042253521
+rfc:
+    S Micro F1 :0.485915492958
+lsvc:
+    S Micro F1 :0.429577464789
+svc:
+    S Micro F1 :0.457746478873
+lmart:
+    S Micro F1 :0.570422535211
+AQUAINT:
+abc:
+    S Micro F1 :0.853013092071
+bgc:
+    S Micro F1 :0.856018673866
+etc:
+    S Micro F1 :0.8526948991
+gbc:
+    S Micro F1 :0.860404318635
+rfc:
+    S Micro F1 :0.8544659944
+lsvc:
+    S Micro F1 :0.851604353393
+svc:
+    S Micro F1 :0.854315510849
+lmart:
+    S Micro F1 :0.853292776675
+MSNBC:
+abc:
+    S Micro F1 :0.678264564668
+bgc:
+    S Micro F1 :0.676948927251
+etc:
+    S Micro F1 :0.682894866493
+gbc:
+    S Micro F1 :0.675220424638
+rfc:
+    S Micro F1 :0.678264564668
+lsvc:
+    S Micro F1 :0.670588037635
+svc:
+    S Micro F1 :0.667510809126
+lmart:
+    S Micro F1 :0.733602149637
+nopop:
+abc:
+    S Micro F1 :0.0758820686322
+bgc:
+    S Micro F1 :0.119381343644
+etc:
+    S Micro F1 :0.102948284195
+gbc:
+    S Micro F1 :0.0807153214113
+rfc:
+    S Micro F1 :0.103431609473
+lsvc:
+    S Micro F1 :0.0335911068149
+svc:
+    S Micro F1 :0.0478492025133
+lmart:
+    S Micro F1 :0.234896085065
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+maxC: 20
+2017-07-13 02:41:46.995336
+
+Doing hybrid candidate generation with popular trained models.
+
+kore:
+abc:
+    S Micro F1 :0.450704225352
+bgc:
+    S Micro F1 :0.457746478873
+etc:
+    S Micro F1 :0.464788732394
+gbc:
+    S Micro F1 :0.457746478873
+rfc:
+    S Micro F1 :0.443661971831
+lsvc:
+    S Micro F1 :0.415492957746
+svc:
+    S Micro F1 :0.443661971831
+lmart:
+    S Micro F1 :0.549295774648
+AQUAINT:
+abc:
+    S Micro F1 :0.829197080292
+bgc:
+    S Micro F1 :0.830656934307
+etc:
+    S Micro F1 :0.826277372263
+gbc:
+    S Micro F1 :0.833576642336
+rfc:
+    S Micro F1 :0.827737226277
+lsvc:
+    S Micro F1 :0.827737226277
+svc:
+    S Micro F1 :0.832116788321
+lmart:
+    S Micro F1 :0.816058394161
+MSNBC:
+abc:
+    S Micro F1 :0.669710806697
+bgc:
+    S Micro F1 :0.669710806697
+etc:
+    S Micro F1 :0.675799086758
+gbc:
+    S Micro F1 :0.669710806697
+rfc:
+    S Micro F1 :0.666666666667
+lsvc:
+    S Micro F1 :0.657534246575
+svc:
+    S Micro F1 :0.662100456621
+lmart:
+    S Micro F1 :0.712328767123
+nopop:
+abc:
+    S Micro F1 :0.0703238279362
+bgc:
+    S Micro F1 :0.0708071532141
+etc:
+    S Micro F1 :0.0751570807153
+gbc:
+    S Micro F1 :0.065732237796
+rfc:
+    S Micro F1 :0.0727404543258
+lsvc:
+    S Micro F1 :0.0227162880619
+svc:
+    S Micro F1 :0.0289995166747
+lmart:
+    S Micro F1 :0.194780086999
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+maxC: 20
+2017-07-13 14:19:46.535667
+
+Doing popular candidate generation with hybrid trained models.
+
+kore:
+abc:
+    S Micro F1 :0.478873239437
+bgc:
+    S Micro F1 :0.5
+etc:
+    S Micro F1 :0.471830985915
+gbc:
+    S Micro F1 :0.471830985915
+rfc:
+    S Micro F1 :0.492957746479
+lsvc:
+    S Micro F1 :0.383802816901
+svc:
+    S Micro F1 :0.415492957746
+lmart:
+    S Micro F1 :0.584507042254
+AQUAINT:
+abc:
+    S Micro F1 :0.848165628099
+bgc:
+    S Micro F1 :0.866731221659
+etc:
+    S Micro F1 :0.850332194895
+gbc:
+    S Micro F1 :0.857301413239
+rfc:
+    S Micro F1 :0.860307863994
+lsvc:
+    S Micro F1 :0.846874964581
+svc:
+    S Micro F1 :0.853064207408
+lmart:
+    S Micro F1 :0.838088219693
+MSNBC:
+abc:
+    S Micro F1 :0.679753546205
+bgc:
+    S Micro F1 :0.69075313323
+etc:
+    S Micro F1 :0.676833364504
+gbc:
+    S Micro F1 :0.68597418018
+rfc:
+    S Micro F1 :0.689193749507
+lsvc:
+    S Micro F1 :0.665904179665
+svc:
+    S Micro F1 :0.665904179665
+lmart:
+    S Micro F1 :0.724724984016
+nopop:
+abc:
+    S Micro F1 :0.0582406959884
+bgc:
+    S Micro F1 :0.0915901401643
+etc:
+    S Micro F1 :0.0869985500242
+gbc:
+    S Micro F1 :0.0737071048816
+rfc:
+    S Micro F1 :0.087723537941
+lsvc:
+    S Micro F1 :0.0106331561141
+svc:
+    S Micro F1 :0.0326244562591
+lmart:
+    S Micro F1 :0.236346060899
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+maxC: 20
+2017-07-13 15:54:27.922322
+
+Doing hybrid candidate generation with hybrid trained models.
+
+kore:
+abc:
+    S Micro F1 :0.429577464789
+bgc:
+    S Micro F1 :0.443661971831
+etc:
+    S Micro F1 :0.450704225352
+gbc:
+    S Micro F1 :0.471830985915
+rfc:
+    S Micro F1 :0.443661971831
+lsvc:
+    S Micro F1 :0.380281690141
+svc:
+    S Micro F1 :0.380281690141
+lmart:
+    S Micro F1 :0.556338028169
+AQUAINT:
+abc:
+    S Micro F1 :0.827737226277
+bgc:
+    S Micro F1 :0.836496350365
+etc:
+    S Micro F1 :0.827737226277
+gbc:
+    S Micro F1 :0.83503649635
+rfc:
+    S Micro F1 :0.830656934307
+lsvc:
+    S Micro F1 :0.824817518248
+svc:
+    S Micro F1 :0.827737226277
+lmart:
+    S Micro F1 :0.83795620438
+MSNBC:
+abc:
+    S Micro F1 :0.663622526636
+bgc:
+    S Micro F1 :0.674277016743
+etc:
+    S Micro F1 :0.660578386606
+gbc:
+    S Micro F1 :0.669710806697
+rfc:
+    S Micro F1 :0.671232876712
+lsvc:
+    S Micro F1 :0.648401826484
+svc:
+    S Micro F1 :0.651445966514
+lmart:
+    S Micro F1 :0.706240487062
+nopop:
+abc:
+    S Micro F1 :0.0497825036249
+bgc:
+    S Micro F1 :0.0773320444659
+etc:
+    S Micro F1 :0.0717738037699
+gbc:
+    S Micro F1 :0.0594490091832
+rfc:
+    S Micro F1 :0.0739487675205
+lsvc:
+    S Micro F1 :0.00676655389077
+svc:
+    S Micro F1 :0.022232962784
+lmart:
+    S Micro F1 :0.204929917835
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+56,83,77 is best so far: with wiki-5000 trained pop, using pop-gen, lambdaMART.
+57,85,73: with pop pop 10000, lambdaMART
+
+maxC: 20
+2017-07-13 16:46:22.651960
+
+Doing popular candidate generation with new popular trained models.
+
+kore:
+abc:
+    S Micro F1 :0.492957746479
+bgc:
+    S Micro F1 :0.485915492958
+etc:
+    S Micro F1 :0.492957746479
+gbc:
+    S Micro F1 :0.521126760563
+rfc:
+    S Micro F1 :0.514084507042
+lsvc:
+    S Micro F1 :0.429577464789
+svc:
+    S Micro F1 :0.457746478873
+lmart:
+    S Micro F1 :0.570422535211
+AQUAINT:
+abc:
+    S Micro F1 :0.854472946086
+bgc:
+    S Micro F1 :0.855914398579
+etc:
+    S Micro F1 :0.858931430209
+gbc:
+    S Micro F1 :0.860446028749
+rfc:
+    S Micro F1 :0.85592743299
+lsvc:
+    S Micro F1 :0.851604353393
+svc:
+    S Micro F1 :0.854315510849
+lmart:
+    S Micro F1 :0.853292776675
+MSNBC:
+abc:
+    S Micro F1 :0.679786634683
+bgc:
+    S Micro F1 :0.676757996303
+etc:
+    S Micro F1 :0.683012514417
+gbc:
+    S Micro F1 :0.675135865192
+rfc:
+    S Micro F1 :0.679935285908
+lsvc:
+    S Micro F1 :0.670588037635
+svc:
+    S Micro F1 :0.667510809126
+lmart:
+    S Micro F1 :0.733602149637
+nopop:
+abc:
+    S Micro F1 :0.0831319478009
+bgc:
+    S Micro F1 :0.107298211696
+etc:
+    S Micro F1 :0.100531657806
+gbc:
+    S Micro F1 :0.0949734171097
+rfc:
+    S Micro F1 :0.103673272112
+lsvc:
+    S Micro F1 :0.0335911068149
+svc:
+    S Micro F1 :0.0478492025133
+lmart:
+    S Micro F1 :0.234896085065
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+maxC: 20
+2017-07-13 18:10:02.762424
+
+Doing hybrid candidate generation with new popular trained models.
+
+kore:
+abc:
+    S Micro F1 :0.457746478873
+bgc:
+    S Micro F1 :0.464788732394
+etc:
+    S Micro F1 :0.457746478873
+gbc:
+    S Micro F1 :0.450704225352
+rfc:
+    S Micro F1 :0.450704225352
+lsvc:
+    S Micro F1 :0.415492957746
+svc:
+    S Micro F1 :0.443661971831
+lmart:
+    S Micro F1 :0.549295774648
+AQUAINT:
+abc:
+    S Micro F1 :0.832116788321
+bgc:
+    S Micro F1 :0.827737226277
+etc:
+    S Micro F1 :0.827737226277
+gbc:
+    S Micro F1 :0.833576642336
+rfc:
+    S Micro F1 :0.829197080292
+lsvc:
+    S Micro F1 :0.827737226277
+svc:
+    S Micro F1 :0.832116788321
+lmart:
+    S Micro F1 :0.816058394161
+MSNBC:
+abc:
+    S Micro F1 :0.669710806697
+bgc:
+    S Micro F1 :0.671232876712
+etc:
+    S Micro F1 :0.666666666667
+gbc:
+    S Micro F1 :0.671232876712
+rfc:
+    S Micro F1 :0.669710806697
+lsvc:
+    S Micro F1 :0.657534246575
+svc:
+    S Micro F1 :0.662100456621
+lmart:
+    S Micro F1 :0.712328767123
+nopop:
+abc:
+    S Micro F1 :0.0792653455776
+bgc:
+    S Micro F1 :0.0739487675205
+etc:
+    S Micro F1 :0.0695988400193
+gbc:
+    S Micro F1 :0.0642822619623
+rfc:
+    S Micro F1 :0.0683905268246
+lsvc:
+    S Micro F1 :0.0227162880619
+svc:
+    S Micro F1 :0.0289995166747
+lmart:
+    S Micro F1 :0.194780086999
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+maxC: 20
+2017-07-13 21:40:44.954868
+
+Doing popular candidate generation with new hybrid trained models.
+
+kore:
+abc:
+    S Micro F1 :0.485915492958
+bgc:
+    S Micro F1 :0.492957746479
+etc:
+    S Micro F1 :0.492957746479
+gbc:
+    S Micro F1 :0.492957746479
+rfc:
+    S Micro F1 :0.507042253521
+lsvc:
+    S Micro F1 :0.383802816901
+svc:
+    S Micro F1 :0.415492957746
+lmart:
+    S Micro F1 :0.584507042254
+AQUAINT:
+abc:
+    S Micro F1 :0.852934484547
+bgc:
+    S Micro F1 :0.860495559511
+etc:
+    S Micro F1 :0.854454544564
+gbc:
+    S Micro F1 :0.865138416653
+rfc:
+    S Micro F1 :0.861955413525
+lsvc:
+    S Micro F1 :0.846874964581
+svc:
+    S Micro F1 :0.853064207408
+lmart:
+    S Micro F1 :0.838088219693
+MSNBC:
+abc:
+    S Micro F1 :0.68127561622
+bgc:
+    S Micro F1 :0.684567672911
+etc:
+    S Micro F1 :0.682987821523
+gbc:
+    S Micro F1 :0.682936350556
+rfc:
+    S Micro F1 :0.685998873074
+lsvc:
+    S Micro F1 :0.665904179665
+svc:
+    S Micro F1 :0.665904179665
+lmart:
+    S Micro F1 :0.724724984016
+nopop:
+abc:
+    S Micro F1 :0.065732237796
+bgc:
+    S Micro F1 :0.0894151764137
+etc:
+    S Micro F1 :0.0898985016916
+gbc:
+    S Micro F1 :0.0828902851619
+rfc:
+    S Micro F1 :0.08796520058
+lsvc:
+    S Micro F1 :0.0106331561141
+svc:
+    S Micro F1 :0.0326244562591
+lmart:
+    S Micro F1 :0.236346060899
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+maxC: 20
+2017-07-13 23:04:35.330401
+
+Doing hybrid candidate generation with new hybrid trained models.
+
+kore:
+abc:
+    S Micro F1 :0.422535211268
+bgc:
+    S Micro F1 :0.450704225352
+etc:
+    S Micro F1 :0.457746478873
+gbc:
+    S Micro F1 :0.464788732394
+rfc:
+    S Micro F1 :0.450704225352
+lsvc:
+    S Micro F1 :0.380281690141
+svc:
+    S Micro F1 :0.380281690141
+lmart:
+    S Micro F1 :0.556338028169
+AQUAINT:
+abc:
+    S Micro F1 :0.829197080292
+bgc:
+    S Micro F1 :0.83503649635
+etc:
+    S Micro F1 :0.832116788321
+gbc:
+    S Micro F1 :0.832116788321
+rfc:
+    S Micro F1 :0.830656934307
+lsvc:
+    S Micro F1 :0.824817518248
+svc:
+    S Micro F1 :0.827737226277
+lmart:
+    S Micro F1 :0.83795620438
+MSNBC:
+abc:
+    S Micro F1 :0.663622526636
+bgc:
+    S Micro F1 :0.666666666667
+etc:
+    S Micro F1 :0.666666666667
+gbc:
+    S Micro F1 :0.669710806697
+rfc:
+    S Micro F1 :0.665144596651
+lsvc:
+    S Micro F1 :0.648401826484
+svc:
+    S Micro F1 :0.651445966514
+lmart:
+    S Micro F1 :0.706240487062
+nopop:
+abc:
+    S Micro F1 :0.0577573707105
+bgc:
+    S Micro F1 :0.0778153697438
+etc:
+    S Micro F1 :0.0691155147414
+gbc:
+    S Micro F1 :0.0616239729338
+rfc:
+    S Micro F1 :0.0734654422426
+lsvc:
+    S Micro F1 :0.00676655389077
+svc:
+    S Micro F1 :0.022232962784
+lmart:
+    S Micro F1 :0.204929917835
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

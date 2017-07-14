@@ -60,7 +60,7 @@ for line in dataLines:
     
     line['mentions'] = mentionStartsAndEnds(line)
     # get what should be all candidates
-    candidates = generateCandidates(line, 999, True)
+    candidates = generateCandidates(line, 999, False)
     
     i = 0
     for i in range(0, len(candidates)):
@@ -144,7 +144,7 @@ for line in dataLines:
     print 'Line: ' + str(f)
         
 
-with open('/users/cs/amaral/wikisim/wikification/learning-data/el-10000-hybridgen.txt', 'w') as f:
+with open('/users/cs/amaral/wikisim/wikification/learning-data/el-10000.txt', 'w') as f:
     for thing in allCands:
         for thingy in thing:
             f.write(str(thingy)[1:-1] + '\n')

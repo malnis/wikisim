@@ -261,6 +261,8 @@ def mentionExtract(text):
     
     textData = [] # [[begin,end,word,anchorProb],...]
     
+    print textData0
+    
     i = 0 # for wordIndex
     # get rid of extra un-needed Solr data, and add in anchor probability
     for item in textData0:
@@ -1145,11 +1147,14 @@ def wikifyCoherence(textData, candidates, ws = 5):
 
 mlModels = {} # dictionary of different models
 mlModelFiles = {
-    'gbc': '/users/cs/amaral/wikisim/wikification/ml-models/model-gbc-1.pkl',
-    'etr': '/users/cs/amaral/wikisim/wikification/ml-models/model-etr-1.pkl',
-    'gbr': '/users/cs/amaral/wikisim/wikification/ml-models/model-gbr-1.pkl',
-    'lmart': '/users/cs/amaral/wikisim/wikification/ml-models/model-lmart-1.pkl',
-    'rfr': '/users/cs/amaral/wikisim/wikification/ml-models/model-rfr-1.pkl'}
+    'abc': '/users/cs/amaral/wikisim/wikification/ml-models/model-abc-10000-hyb.pkl',
+    'bgc': '/users/cs/amaral/wikisim/wikification/ml-models/model-bgc-10000-hyb.pkl',
+    'etc': '/users/cs/amaral/wikisim/wikification/ml-models/model-etc-10000-hyb.pkl',
+    'gbc': '/users/cs/amaral/wikisim/wikification/ml-models/model-gbc-10000-hyb.pkl',
+    'rfc': '/users/cs/amaral/wikisim/wikification/ml-models/model-rfc-10000-hyb.pkl',
+    'lsvc': '/users/cs/amaral/wikisim/wikification/ml-models/model-lsvc-10000-hyb.pkl',
+    'svc': '/users/cs/amaral/wikisim/wikification/ml-models/model-svc-10000-hyb.pkl',
+    'lmart': '/users/cs/amaral/wikisim/wikification/ml-models/model-lmart-10000-hyb.pkl'}
 
 def wikifyMulti(textData, candidates, oText, model, useSentence = True, window = 7):
     """

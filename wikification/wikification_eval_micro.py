@@ -28,7 +28,7 @@ datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')},
 #datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}]
 #datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}]
 #datasets = [{'name':'wiki5000', 'path':os.path.join(pathStrt,'wiki-mentions.5000.json')}]
-datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')}]
+datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')}, {'name':'nopop', 'path':os.path.join(pathStrt,'nopop.json')}]
 #datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')},{'name':'wiki500', 'path':os.path.join(pathStrt,'wiki-mentions.500.json')}]
 #datasets = [{'name':'nopop', 'path':os.path.join(pathStrt,'nopop.json')}]
 #datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')},{'name':'wiki500', 'path':os.path.join(pathStrt,'wiki-mentions.500.json')},{'name':'nopop', 'path':os.path.join(pathStrt,'nopop.json')}]
@@ -36,7 +36,7 @@ datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':
 #datasets = [{'name':'wiki500', 'path':os.path.join(pathStrt,'wiki-mentions.500.json')}]
 
 # 'popular', 'context1', 'context2', 'word2vec', 'coherence', 'tagme'
-methods = ['lmart', 'gbr', 'etr', 'rfr']
+methods = ['abc', 'bgc', 'etc', 'gbc', 'rfc', 'lsvc', 'svc', 'lmart']
 
 if 'word2vec' in methods or 'multi' in methods or True:
     try:
@@ -125,6 +125,7 @@ for dataset in datasets:
 
 with open('/users/cs/amaral/wikisim/wikification/wikification_results.txt', 'a') as resultFile:
     resultFile.write('\nmaxC: ' + str(maxCands) + '\n' + str(datetime.now()) + '\n\n')
+    resultFile.write('Doing popular candidate generation with new hybrid trained models.\n\n')
     for dataset in datasets:
         resultFile.write(dataset['name'] + ':\n')
         for mthd in methods:
