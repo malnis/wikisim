@@ -138,12 +138,12 @@ newData = []
 
 # exclude non-mentions to treat as novelty detection
 # include non-mentions to treat as classification
-nonMentions = False
+nonMentions = True
 
 with open(dsPath, 'r') as dataFile:
     dataLines = []
     skip = 0
-    amount = 10000
+    amount = 30000
     i = 0
     for line in dataFile:
         if i >= skip:
@@ -277,7 +277,7 @@ for line in dataLines:
     print 'Line: ' + str(lnum)
     
 # nov for novelty, cls for classification
-with open('/users/cs/amaral/wikisim/wikification/learning-data/er-10000-nov.txt', 'w') as f:
-#with open('/users/cs/amaral/wikisim/wikification/learning-data/er-10000-cls.txt', 'w') as f:
+#with open('/users/cs/amaral/wikisim/wikification/learning-data/er-10000-nov.txt', 'w') as f:
+with open('/users/cs/amaral/wikisim/wikification/learning-data/er-10000-cls.txt', 'w') as f:
     for data in newData:
         f.write(str(data)[1:-1] + '\n')

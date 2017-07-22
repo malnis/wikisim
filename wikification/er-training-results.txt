@@ -286,3 +286,65 @@ linear svc:
           1       0.91      0.78      0.84      9635
 
 avg / total       0.97      0.97      0.97    100513
+
+==========================================================
+With more data
+
+With Ratio: 1
+adaboost:
+             precision    recall  f1-score   support
+
+          0       0.95      0.96      0.96     28116
+          1       0.96      0.95      0.95     27831
+
+avg / total       0.96      0.96      0.96     55947
+
+bagging:
+             precision    recall  f1-score   support
+
+          0       0.96      0.96      0.96     28116
+          1       0.96      0.96      0.96     27831
+
+avg / total       0.96      0.96      0.96     55947
+
+extra trees:
+             precision    recall  f1-score   support
+
+          0       0.96      0.96      0.96     28116
+          1       0.96      0.96      0.96     27831
+
+avg / total       0.96      0.96      0.96     55947
+
+gradient boosting:
+             precision    recall  f1-score   support
+
+          0       0.96      0.96      0.96     28116
+          1       0.96      0.96      0.96     27831
+
+avg / total       0.96      0.96      0.96     55947
+
+random forest:
+             precision    recall  f1-score   support
+
+          0       0.96      0.96      0.96     28116
+          1       0.96      0.96      0.96     27831
+
+avg / total       0.96      0.96      0.96     55947
+
+linear svc:
+             precision    recall  f1-score   support
+
+          0       0.92      0.97      0.95     28116
+          1       0.97      0.91      0.94     27831
+
+avg / total       0.94      0.94      0.94     55947
+
+svc:
+             precision    recall  f1-score   support
+
+          0       0.94      0.97      0.95     28116
+          1       0.97      0.93      0.95     27831
+
+avg / total       0.95      0.95      0.95     55947
+
+Ratio 1 done.

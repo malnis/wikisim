@@ -1,6 +1,6 @@
 
 """
-This evaluates the quality of mention extraction
+This evaluates the quality of mention extraction, macro scores.
 """
 
 from __future__ import division
@@ -9,6 +9,8 @@ import json
 import os
 from wikification import *
 from datetime import datetime
+from pycorenlp import StanfordCoreNLP
+nlp = StanfordCoreNLP('http://localhost:9000')
 
 pathStrt = '/users/cs/amaral/wsd-datasets'
 #pathStrt = 'C:\\Temp\\wsd-datasets'
@@ -24,7 +26,7 @@ datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')},
 #datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}]
 #datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}]
 #datasets = [{'name':'wiki5000', 'path':os.path.join(pathStrt,'wiki-mentions.5000.json')}]
-#datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')}]
+datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')}]
 
 performances = {}
 
@@ -52,12 +54,22 @@ for dataset in datasets:
             print str(totalLines + 1)
 
         trueMentions = mentionStartsAndEnds(line, True)
-        myMentions = mentionStartsAndEnds(mentionExtract(" ".join(line['text'])))
+        
+        output = nlp.annotate(" ".join(line['text']).encode('utf-8'), properties={
+            'annotators': 'entitymentions',
+            'outputFormat': 'json'
+        })
+        myMentions = []
+        for sentence in output['sentences']:
+            for em in sentence['entitymentions']:
+                myMentions.append([em['characterOffsetBegin'], em['characterOffsetEnd']])
+        
+        """myMentions = mentionStartsAndEnds(mentionExtract(" ".join(line['text'])))
         
         # put in right format
         for mention in myMentions:
             mention[0] = mention[2]
-            mention[1] = mention[3]
+            mention[1] = mention[3]"""
             
         prec = mentionPrecision(trueMentions, myMentions)
         rec = mentionRecall(trueMentions, myMentions)
@@ -81,13 +93,12 @@ for dataset in datasets:
                                      'F1':totalF1/totalLines}
             
 with open('/users/cs/amaral/wikisim/wikification/mention_extraction_results.txt', 'a') as resultFile:
-    resultFile.write(str(datetime.now()) + '\n\n')
+    resultFile.write(str(datetime.now()) + '\n')
+    resultFile.write('Using CoreNLP' + '\n\n')
     for dataset in datasets:
         resultFile.write(dataset['name'] + ':\n')
-        for mthd in methods:
-            resultFile.write(mthd + ':'
-                   + '\n    Prec :' + str(performances[dataset['name']][mthd]['Precision'])
-                   + '\n    Rec :' + str(performances[dataset['name']][mthd]['Recall'])
-                   + '\n    F1 :' + str(performances[dataset['name']][mthd]['F1']) + '\n')
+        resultFile.write('\n    Prec :' + str(performances[dataset['name']]['Precision'])
+               + '\n    Rec :' + str(performances[dataset['name']]['Recall'])
+               + '\n    F1 :' + str(performances[dataset['name']]['F1']) + '\n')
                 
     resultFile.write('\n' + '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~' + '\n')

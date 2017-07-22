@@ -261,7 +261,7 @@ def mentionExtract(text):
     
     textData = [] # [[begin,end,word,anchorProb],...]
     
-    print textData0
+    #print textData0
     
     i = 0 # for wordIndex
     # get rid of extra un-needed Solr data, and add in anchor probability
@@ -281,7 +281,7 @@ def mentionExtract(text):
     
     # get rid of overlaps
     textData = destroyExclusiveOverlaps(textData)
-    textData = destroyResidualOverlaps(textData)
+    #textData = destroyResidualOverlaps(textData)
         
     # gets the POS labels for the words
     postrs = []
