@@ -90,7 +90,7 @@ posBefDict = {
     'CD':8,
     '(':9,
     'TO':10,
-    'FAIL':1
+    'FAIL':11
 }
 
 posCurDict = {
@@ -100,7 +100,7 @@ posCurDict = {
     'NNS':3,
     'CD':4,
     'NNPS':5,
-    'FAIL':1
+    'FAIL':6
 }
 
 posAftDict = {
@@ -115,8 +115,8 @@ posAftDict = {
     'VBZ':8,
     'POS':9,
     'NNS':10,
-    'TO':1,
-    'FAIL':1
+    'TO':11,
+    'FAIL':12
 }
 
 def normalize(nums):
@@ -278,6 +278,6 @@ for line in dataLines:
     
 # nov for novelty, cls for classification
 #with open('/users/cs/amaral/wikisim/wikification/learning-data/er-10000-nov.txt', 'w') as f:
-with open('/users/cs/amaral/wikisim/wikification/learning-data/er-10000-cls.txt', 'w') as f:
+with open('/users/cs/amaral/wikisim/wikification/learning-data/er-30000-cls-v2.txt', 'w') as f:
     for data in newData:
         f.write(str(data)[1:-1] + '\n')

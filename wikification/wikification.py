@@ -22,6 +22,10 @@ from calcsim import *
 sys.path.append('../')
 from wsd.wsd import *
 import numpy as np
+from pycorenlp import StanfordCoreNLP
+scnlp = StanfordCoreNLP('http://localhost:9000')
+import copy
+
 
 MIN_MENTION_LENGTH = 3 # mentions must be at least this long
 MIN_FREQUENCY = 20 # anchor with frequency below is ignored
@@ -239,7 +243,163 @@ def mentionStartsAndEnds(textData, forTruth = False):
             mention.append(title2id(ent)) # put on entityId
     
     return textData['mentions']
+
+posBefDict = {
+    'IN':0,
+    'DT':1,
+    'NNP':2,
+    'JJ':3,
+    ',':4,
+    'CC':5,
+    'NN':6,
+    'VBD':7,
+    'CD':8,
+    '(':9,
+    'TO':10,
+    'FAIL':11
+}
+
+posCurDict = {
+    'NNP':0,
+    'NN':1,
+    'JJ':2,
+    'NNS':3,
+    'CD':4,
+    'NNPS':5,
+    'FAIL':6
+}
+
+posAftDict = {
+    ',':0,
+    '.':1,
+    'IN':2,
+    'NNP':3,
+    'CC':4,
+    'NN':5,
+    'VBD':6,
+    ':':7,
+    'VBZ':8,
+    'POS':9,
+    'NNS':10,
+    'TO':11,
+    'FAIL':12
+}
      
+def getGoodMentions(splitText, mentions, model):
+    """
+    Description: 
+        Finds the potential mentions that are deemed good by our classifier.
+    Args:
+        splitText: The text in split form.
+        mentions: All of the potential mentions [word index, start offset, end offset].
+        model: The machine learning model to predict with.
+    Return:
+        A subset of arg mentions with each element deemed to be worthy by the classifier.
+    """
+    
+    goodMentions = [] # the mentions to return
+    
+    #Get POS tags of all text
+    postrs = nltk.pos_tag(copy.deepcopy(splitText))
+
+    # get stanford core mentions
+    try:
+        stnfrdMentions0 = scnlp.annotate(" ".join(splitText).encode('utf-8'), properties={
+            'annotators': 'entitymentions',
+            'outputFormat': 'json'})
+    except:
+        print 'Error!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
+        k = 1/0
+    stnfrdMentions = []
+    for sentence in stnfrdMentions0['sentences']:
+        for mention in sentence['entitymentions']:
+            stnfrdMentions.append(mention['text'])
+            
+    for i in range(len(splitText)):
+        aMention = [] # fill with attributes about current mention for prediction
+        
+        """ 
+        Append POS tags of before, on, and after mention.
+        """
+        if i == 0:
+            bef = 'NONE'
+        else:
+            bef = postrs[i-1][1] # pos tag of before
+        if bef in posBefDict:
+            bef = posBefDict[bef]
+        else:
+            bef = posBefDict['FAIL']
+            
+        on = postrs[i][1] # pos tag of mention
+        if on in posCurDict:
+            on = posCurDict[on]
+        else:
+            on = posCurDict['FAIL']
+        
+        if i == len(splitText) - 1:
+            aft = 'NONE'
+        else:
+            aft = postrs[i+1][1] # pos tag of after
+        if aft in posAftDict:
+            aft = posAftDict[aft]
+        else:
+            aft = posAftDict['FAIL']
+        
+        aMention.extend([bef, on, aft])
+        
+        """
+        Append mention probability.
+        """
+        aMention.append(mentionProb(splitText[i]))
+        
+        """
+        Find whether Stanford NER decides the word to be mention.
+        """
+        if splitText[i] in stnfrdMentions:
+            stnfrdMentions.remove(splitText[i])
+            aMention.append(1)
+        else:
+            aMention.append(0)
+            
+        """
+        Whether starts with capital.
+        """
+        if splitText[i][0].isupper():
+            aMention.append(1)
+        else:
+            aMention.append(0)
+            
+        """
+        Whether there is an exact match in Wikipedia.
+        """
+        if title2id(splitText[i]) is not None:
+            aMention.append(1)
+        else:
+            aMention.append(0)
+            
+        """
+        Whether word contains a space.
+        """
+        if ' ' in splitText[i]:
+            aMention.append(1)
+        else:
+            aMention.append(0)
+            
+        """
+        Whether the word contains only ascii characters.
+        """
+        try:
+            splitText[i].decode('ascii')
+            aMention.append(1)
+        except:
+            aMention.append(0)
+            
+        # predict
+        if model.predict([aMention])[0] == 1:
+            goodMentions.append(mentions[i])
+            
+    return goodMentions
+    
 def mentionExtract(text):
     """
     Description:
@@ -252,7 +412,7 @@ def mentionExtract(text):
     """
     
     addr = 'http://localhost:8983/solr/enwikianchors20160305/tag'
-    params={'overlaps':'ALL', 'tagsLimit':'5000', 'fl':'id','wt':'json','indent':'on'}
+    params={'overlaps':'LONGEST_DOMINANT_RIGHT', 'tagsLimit':'5000', 'fl':'id','wt':'json','indent':'on'}
     r = requests.post(addr, params=params, data=text.encode('utf-8'))
     textData0 = r.json()['tags']
     
@@ -261,61 +421,20 @@ def mentionExtract(text):
     
     textData = [] # [[begin,end,word,anchorProb],...]
     
-    #print textData0
-    
     i = 0 # for wordIndex
-    # get rid of extra un-needed Solr data, and add in anchor probability
+    # get rid of extra un-needed Solr data
     for item in textData0:
-        totalMentions = get_mention_count(text[item[1]:item[3]])
-        totalAppearances = get_solr_count(text[item[1]:item[3]].replace(".", ""))
-        if totalAppearances == 0:
-            anchorProb = 0
-        else:
-            anchorProb = totalMentions/totalAppearances
-        # put in the new clean textData
-        textData.append([item[1], item[3], text[item[1]:item[3]], anchorProb, i])
+        mentions.append([i, item[1], item[3]])
         i += 1
-        
         # also fill split text
         splitText.append(text[item[1]:item[3]])
-    
-    # get rid of overlaps
-    textData = destroyExclusiveOverlaps(textData)
-    #textData = destroyResidualOverlaps(textData)
         
-    # gets the POS labels for the words
-    postrs = []
-    for item in textData:
-        postrs.append(item[2])
-    postrs = nltk.pos_tag(postrs)
-    
-    for i in range(0,len(textData)):
-        textData[i].append(postrs[i]) # [5][1] is index of type of word
-    
-    mentionPThrsh = 0.001 # for getting rid of unlikelies
-    
-    # put in only good mentions
-    i = 0
-    for item in textData:
-        if i == 0:
-            bef = 'NONE'
-        else:
-            bef = textData[i-1][5][1] # pos tag of before
-        if i == len(textData) - 1:
-            aft = 'NONE'
-        else:
-            aft = textData[i+1][5][1] # pos tag of after
-        befaft = " : ".join([bef,aft])
+    if 'gbc-er' not in mlModels:
+        mlModels['gbc-er'] = pickle.load(open(mlModelFiles['gbc-er'], 'rb'))
         
-        if (item[3] >= mentionPThrsh # if popular enough, and either some type of noun or JJ or CD
-                and (item[5][1][0:2] == 'NN' or item[5][1] == 'JJ' or item[5][1] == 'CD')):
-            mentions.append([item[4], item[0], item[1]]) # wIndex, start, end
-        i += 1
+    mentions = getGoodMentions(splitText, mentions, mlModels['gbc-er'])
     
-    # get in same format as dataset provided data
-    newTextData = {'text':splitText, 'mentions':mentions}
-    
-    return newTextData
+    return {'text':splitText, 'mentions':mentions}
 
 def getMentionsInSentence(textData, mainWord):
     """
@@ -1154,7 +1273,8 @@ mlModelFiles = {
     'rfc': '/users/cs/amaral/wikisim/wikification/ml-models/model-rfc-10000-hyb.pkl',
     'lsvc': '/users/cs/amaral/wikisim/wikification/ml-models/model-lsvc-10000-hyb.pkl',
     'svc': '/users/cs/amaral/wikisim/wikification/ml-models/model-svc-10000-hyb.pkl',
-    'lmart': '/users/cs/amaral/wikisim/wikification/ml-models/model-lmart-10000-hyb.pkl'}
+    'lmart': '/users/cs/amaral/wikisim/wikification/ml-models/model-lmart-10000-hyb.pkl',
+    'gbc-er': '/users/cs/amaral/wikisim/wikification/ml-models/er/er-model-gbc-30000.pkl'}
 
 def wikifyMulti(textData, candidates, oText, model, useSentence = True, window = 7):
     """
