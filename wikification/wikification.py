@@ -318,7 +318,7 @@ def getGoodMentions(splitText, mentions, model):
             
     enc = OneHotEncoder(n_values = [12,7,13], categorical_features = [0,1,2])
             
-    for i in range(len(splitText)):
+    for i in range(len(mentions)):
         aMention = [] # fill with attributes about current mention for prediction
         
         """ 
@@ -353,13 +353,13 @@ def getGoodMentions(splitText, mentions, model):
         """
         Append mention probability.
         """
-        aMention.append(mentionProb(splitText[i]))
+        aMention.append(mentionProb(splitText[mentions[i][0]]))
         
         """
         Find whether Stanford NER decides the word to be mention.
         """
-        if splitText[i] in stnfrdMentions:
-            stnfrdMentions.remove(splitText[i])
+        if splitText[mentions[i][0]] in stnfrdMentions:
+            stnfrdMentions.remove(splitText[mentions[i][0]])
             aMention.append(1)
         else:
             aMention.append(0)
@@ -367,7 +367,7 @@ def getGoodMentions(splitText, mentions, model):
         """
         Whether starts with capital.
         """
-        if splitText[i][0].isupper():
+        if splitText[mentions[i][0]][0].isupper():
             aMention.append(1)
         else:
             aMention.append(0)
@@ -375,7 +375,7 @@ def getGoodMentions(splitText, mentions, model):
         """
         Whether there is an exact match in Wikipedia.
         """
-        if title2id(splitText[i]) is not None:
+        if title2id(splitText[mentions[i][0]]) is not None:
             aMention.append(1)
         else:
             aMention.append(0)
@@ -383,7 +383,7 @@ def getGoodMentions(splitText, mentions, model):
         """
         Whether word contains a space.
         """
-        if ' ' in splitText[i]:
+        if ' ' in splitText[mentions[i][0]]:
             aMention.append(1)
         else:
             aMention.append(0)
@@ -392,7 +392,7 @@ def getGoodMentions(splitText, mentions, model):
         Whether the word contains only ascii characters.
         """
         try:
-            splitText[i].decode('ascii')
+            splitText[mentions[i][0]].decode('ascii')
             aMention.append(1)
         except:
             aMention.append(0)
@@ -440,19 +440,20 @@ def getGoodMentions(splitText, mentions, model):
             
     return finalMentions
     
-def mentionExtract(text):
+def mentionExtract(text, useCoreNLP = True):
     """
     Description:
         Takes in a text and splits it into the different words/mentions.
     Args:
-        phrase: The text to be split.
+        text: The text to be split.
+        useCoreNLP: Whether to use CoreNLP entity mention annotation.
     Return:
         The text split it into the different words / mentions: 
         {'text':[w1,w2,...], 'mentions': [[wIndex,begin,end],...]}
     """
     
     addr = 'http://localhost:8983/solr/enwikianchors20160305/tag'
-    params={'overlaps':'LONGEST_DOMINANT_RIGHT', 'tagsLimit':'5000', 'fl':'id','wt':'json','indent':'on'}
+    params={'overlaps':'ALL', 'tagsLimit':'5000', 'fl':'id','wt':'json','indent':'on'}
     r = requests.post(addr, params=params, data=text.encode('utf-8'))
     textData0 = r.json()['tags']
     
@@ -1475,5 +1476,50 @@ def wikifyEval(text, mentionsGiven, maxC = 20, method='popular', strict = False,
     if strict:
         wikified = [item for item in wikified
                     if item[3] >= MIN_FREQUENCY]
+    
+    return wikified
+
+def doWikify(text, maxC = 20, hybridC = False, method = 'multi'):
+    """
+    Description:
+        Takes in text, and returns the location of mentions as well as the
+        entities they refer to.
+    Args:
+        text: The text to be wikified.
+    Return:
+        A list of mentions where each element contains the character offset
+        start and end, as well as the corresponding wikipedia page.
+    """
+    
+    # find the mentions
+    # text data now has text in split form and, the mentions
+    textData = mentionExtract(text)
+    
+    # generate candidates
+    candidates = generateCandidates(textData, maxC, hybridC)
+    
+    # disambiguate each mention to its candidates
+    if method == 'popular':
+        wikified = wikifyPopular(textData, candidates)
+    elif method == 'context1':
+        wikified = wikifyContext(textData, candidates, text, useSentence = True, window = 7)
+    elif method == 'context2':
+        wikified = wikifyContext(textData, candidates, text, useSentence = True, window = 7, method2 = True)
+    elif method == 'word2vec':
+        try:
+            word2vec
+        except:
+            word2vec = gensim_loadmodel('/users/cs/amaral/cgmdir/WikipediaClean5Negative300Skip10.Ehsan/WikipediaClean5Negative300Skip10')
+        wikified = wikifyWord2Vec(textData, candidates, text, useSentence = False, window = 5)
+    elif method == 'coherence':
+        wikified = wikifyCoherence(textData, candidates, ws = 5)
+    elif method == 'multi':
+        try:
+            word2vec
+        except:
+            word2vec = gensim_loadmodel('/users/cs/amaral/cgmdir/WikipediaClean5Negative300Skip10.Ehsan/WikipediaClean5Negative300Skip10')
+        if 'lmart' not in mlModels:
+            mlModels['lmart'] = pickle.load(open(mlModelFiles['lmart'], 'rb'))
+        wikified = wikifyMulti(textData, candidates, text, 'lmart', useSentence = True, window = 7)
     
     return wikified
