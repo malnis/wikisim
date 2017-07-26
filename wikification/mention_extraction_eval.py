@@ -26,7 +26,7 @@ datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')},
 #datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}]
 #datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}]
 #datasets = [{'name':'wiki5000', 'path':os.path.join(pathStrt,'wiki-mentions.5000.json')}]
-datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')}]
+#datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')}]
 
 performances = {}
 
@@ -55,6 +55,7 @@ for dataset in datasets:
 
         trueMentions = mentionStartsAndEnds(line, True)
         
+        """
         output = nlp.annotate(" ".join(line['text']).encode('utf-8'), properties={
             'annotators': 'entitymentions',
             'outputFormat': 'json'
@@ -64,12 +65,17 @@ for dataset in datasets:
             for em in sentence['entitymentions']:
                 myMentions.append([em['characterOffsetBegin'], em['characterOffsetEnd']])
         
-        """myMentions = mentionStartsAndEnds(mentionExtract(" ".join(line['text'])))
+        """
+        """"""
+        myMentions = mentionExtract(" ".join(line['text']))['mentions']
         
         # put in right format
+        #print trueMentions
+        #print myMentions
         for mention in myMentions:
-            mention[0] = mention[2]
-            mention[1] = mention[3]"""
+            mention[0] = mention[1]
+            mention[1] = mention[2]
+        """"""
             
         prec = mentionPrecision(trueMentions, myMentions)
         rec = mentionRecall(trueMentions, myMentions)
@@ -94,7 +100,7 @@ for dataset in datasets:
             
 with open('/users/cs/amaral/wikisim/wikification/mention_extraction_results.txt', 'a') as resultFile:
     resultFile.write(str(datetime.now()) + '\n')
-    resultFile.write('Using CoreNLP' + '\n\n')
+    resultFile.write('Using our classifier v2.' + '\n\n')
     for dataset in datasets:
         resultFile.write(dataset['name'] + ':\n')
         resultFile.write('\n    Prec :' + str(performances[dataset['name']]['Precision'])

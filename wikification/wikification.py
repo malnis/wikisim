@@ -25,6 +25,7 @@ import numpy as np
 from pycorenlp import StanfordCoreNLP
 scnlp = StanfordCoreNLP('http://localhost:9000')
 import copy
+from sklearn.preprocessing import OneHotEncoder
 
 
 MIN_MENTION_LENGTH = 3 # mentions must be at least this long
@@ -315,6 +316,8 @@ def getGoodMentions(splitText, mentions, model):
         for mention in sentence['entitymentions']:
             stnfrdMentions.append(mention['text'])
             
+    enc = OneHotEncoder(n_values = [12,7,13], categorical_features = [0,1,2])
+            
     for i in range(len(splitText)):
         aMention = [] # fill with attributes about current mention for prediction
         
@@ -394,11 +397,48 @@ def getGoodMentions(splitText, mentions, model):
         except:
             aMention.append(0)
             
-        # predict
+        """
+        Get all positive classified instances.
+        """
+        aMention = enc.fit_transform([aMention]).toarray()[0]
         if model.predict([aMention])[0] == 1:
             goodMentions.append(mentions[i])
+            # put score of prediction
+            goodMentions[-1].append(model.predict_proba([aMention])[0][1]) # put score of prediction
             
-    return goodMentions
+    """
+    Remove all overlaps in results.
+    """
+    # sort on prediction probability descending
+    goodMentions = sorted(goodMentions, key = itemgetter(-1), reverse = True)
+    
+    try:
+        goodlen = len(goodMentions[0])
+    except:
+        return []
+    
+    for mention1 in goodMentions:
+        if len(mention1) > goodlen:
+            continue
+        for mention2 in goodMentions:
+            # dont do anything with a previous or same one
+            if (mention2[0] == mention1[0] or
+                    mention1[-1] < mention2[-1] or
+                    len(mention2) > goodlen):
+                continue
+            # flag 2 if 2 starts before 1 ends and 2 ends after 1 starts
+            if mention2[1] < mention1[2] and mention2[2] >= mention1[1]:
+                print 'Overlap found', str(mention1), str(mention2)
+                mention2.append(0) # just increase length to flag for deletion
+                
+    finalMentions = []
+    for mention in goodMentions:
+        if len(mention) == goodlen:
+            finalMentions.append(mention[:3])
+            
+    finalMentions = sorted(finalMentions, key = itemgetter(1), reverse = False)
+            
+    return finalMentions
     
 def mentionExtract(text):
     """
@@ -429,10 +469,10 @@ def mentionExtract(text):
         # also fill split text
         splitText.append(text[item[1]:item[3]])
         
-    if 'gbc-er' not in mlModels:
-        mlModels['gbc-er'] = pickle.load(open(mlModelFiles['gbc-er'], 'rb'))
+    if 'bgc-er' not in mlModels:
+        mlModels['bgc-er'] = pickle.load(open(mlModelFiles['bgc-er'], 'rb'))
         
-    mentions = getGoodMentions(splitText, mentions, mlModels['gbc-er'])
+    mentions = getGoodMentions(splitText, mentions, mlModels['bgc-er'])
     
     return {'text':splitText, 'mentions':mentions}
 
@@ -1274,7 +1314,8 @@ mlModelFiles = {
     'lsvc': '/users/cs/amaral/wikisim/wikification/ml-models/model-lsvc-10000-hyb.pkl',
     'svc': '/users/cs/amaral/wikisim/wikification/ml-models/model-svc-10000-hyb.pkl',
     'lmart': '/users/cs/amaral/wikisim/wikification/ml-models/model-lmart-10000-hyb.pkl',
-    'gbc-er': '/users/cs/amaral/wikisim/wikification/ml-models/er/er-model-gbc-30000.pkl'}
+    'gbc-er': '/users/cs/amaral/wikisim/wikification/ml-models/er/er-model-gbc-30000.pkl',
+    'bgc-er': '/users/cs/amaral/wikisim/wikification/ml-models/er/er-model-bgc-30000.pkl'}
 
 def wikifyMulti(textData, candidates, oText, model, useSentence = True, window = 7):
     """
