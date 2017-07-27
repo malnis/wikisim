@@ -406,9 +406,11 @@ def getGoodMentions(splitText, mentions, model):
             # put score of prediction
             goodMentions[-1].append(model.predict_proba([aMention])[0][1]) # put score of prediction
             
+    return goodMentions        
+    
     """
-    Remove all overlaps in results.
-    """
+    #Remove all overlaps in results.
+    
     # sort on prediction probability descending
     goodMentions = sorted(goodMentions, key = itemgetter(-1), reverse = True)
     
@@ -438,7 +440,7 @@ def getGoodMentions(splitText, mentions, model):
             
     finalMentions = sorted(finalMentions, key = itemgetter(1), reverse = False)
             
-    return finalMentions
+    return finalMentions"""
     
 def mentionExtract(text, useCoreNLP = True):
     """
@@ -452,28 +454,55 @@ def mentionExtract(text, useCoreNLP = True):
         {'text':[w1,w2,...], 'mentions': [[wIndex,begin,end],...]}
     """
     
-    addr = 'http://localhost:8983/solr/enwikianchors20160305/tag'
-    params={'overlaps':'ALL', 'tagsLimit':'5000', 'fl':'id','wt':'json','indent':'on'}
-    r = requests.post(addr, params=params, data=text.encode('utf-8'))
-    textData0 = r.json()['tags']
+    if useCoreNLP:
+        output = scnlp.annotate(text, properties={
+            'annotators': 'entitymentions',
+            'outputFormat': 'json'
+        })
+        mentions = []
+        for sentence in output['sentences']:
+            for em in sentence['entitymentions']:
+                mentions.append([em['characterOffsetBegin'], em['characterOffsetEnd']])
+        curM = 0 # index of mention
+        splitText0 = text.split(' ')
+        splitText = []
+        charSoFar = 0
+        skip = 0
+        curW = 0
+        for txt in splitText0:
+            if skip > 0:
+                skip -= 1
+                continue
+            if curM < len(mentions) and charSoFar == mentions[curM][0]:
+                skip = text[mentions[curM][0]:mentions[curM][1]].count(' ')
+                splitText.append(text[mentions[curM][0]:mentions[curM][1]])
+                mentions[curM].insert(0, curW)
+                curM += 1
+            else:
+                splitText.append(txt)
+            charSoFar += 1 + len(splitText[-1])
+            curW += 1
+    else:
+        addr = 'http://localhost:8983/solr/enwikianchors20160305/tag'
+        params={'overlaps':'LONGEST_DOMINANT_RIGHT', 'tagsLimit':'5000', 'fl':'id','wt':'json','indent':'on'}
+        r = requests.post(addr, params=params, data=text.encode('utf-8'))
+        textData0 = r.json()['tags']
+        splitText = [] # the text now in split form
+        mentions = [] # mentions before remove inadequate ones
+        textData = [] # [[begin,end,word,anchorProb],...]
+        i = 0 # for wordIndex
+        # get rid of extra un-needed Solr data
+        for item in textData0:
+            mentions.append([i, item[1], item[3]])
+            i += 1
+            # also fill split text
+            splitText.append(text[item[1]:item[3]])
+        if 'gbc-er' not in mlModels:
+            mlModels['gbc-er'] = pickle.load(open(mlModelFiles['gbc-er'], 'rb'))
+        mentions = getGoodMentions(splitText, mentions, mlModels['gbc-er'])
     
-    splitText = [] # the text now in split form
-    mentions = [] # mentions before remove inadequate ones
-    
-    textData = [] # [[begin,end,word,anchorProb],...]
-    
-    i = 0 # for wordIndex
-    # get rid of extra un-needed Solr data
-    for item in textData0:
-        mentions.append([i, item[1], item[3]])
-        i += 1
-        # also fill split text
-        splitText.append(text[item[1]:item[3]])
-        
-    if 'bgc-er' not in mlModels:
-        mlModels['bgc-er'] = pickle.load(open(mlModelFiles['bgc-er'], 'rb'))
-        
-    mentions = getGoodMentions(splitText, mentions, mlModels['bgc-er'])
+    print splitText
+    print mentions
     
     return {'text':splitText, 'mentions':mentions}
 
