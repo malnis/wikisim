@@ -400,7 +400,7 @@ def getGoodMentions(splitText, mentions, model):
         """
         Get all positive classified instances.
         """
-        aMention = enc.fit_transform([aMention]).toarray()[0]
+        #aMention = enc.fit_transform([aMention]).toarray()[0]
         if model.predict([aMention])[0] == 1:
             goodMentions.append(mentions[i])
             # put score of prediction
@@ -442,13 +442,14 @@ def getGoodMentions(splitText, mentions, model):
             
     return finalMentions"""
     
-def mentionExtract(text, useCoreNLP = True):
+def mentionExtract(text, useCoreNLP = False):
     """
     Description:
         Takes in a text and splits it into the different words/mentions.
     Args:
         text: The text to be split.
         useCoreNLP: Whether to use CoreNLP entity mention annotation.
+            Currently severely broken, never set to True.
     Return:
         The text split it into the different words / mentions: 
         {'text':[w1,w2,...], 'mentions': [[wIndex,begin,end],...]}
@@ -500,9 +501,6 @@ def mentionExtract(text, useCoreNLP = True):
         if 'gbc-er' not in mlModels:
             mlModels['gbc-er'] = pickle.load(open(mlModelFiles['gbc-er'], 'rb'))
         mentions = getGoodMentions(splitText, mentions, mlModels['gbc-er'])
-    
-    print splitText
-    print mentions
     
     return {'text':splitText, 'mentions':mentions}
 
@@ -1552,3 +1550,37 @@ def doWikify(text, maxC = 20, hybridC = False, method = 'multi'):
         wikified = wikifyMulti(textData, candidates, text, 'lmart', useSentence = True, window = 7)
     
     return wikified
+
+def annotateText(text, maxC = 20, hybridC = False, method = 'multi'):
+    """
+    Description:
+        Annotates text with html anchor tags linking to the wikipedia pages
+        of the suspected entities.
+    Args:
+        text: The text to be annotated.
+    Return:
+        The text where the mentions are in anchor tags that link to the 
+        corresponding wikipedia page.
+    """
+    
+    # get the annotations
+    ants = doWikify(text, maxC = maxC, hybridC = hybridC, method = method)
+    
+    newText = '' # the text to return with anchor tags
+    skip = 0
+    curM = 0 # cur mention index
+    for i in range(len(text)):
+        if skip > 0:
+            skip -= 1
+            continue
+        if curM < len(ants) and i == ants[curM][0]:
+            skip = ants[curM][1] - ants[curM][0] - 1
+            newText += ('<a href="https://en.wikipedia.org/wiki/'
+                       + id2title(ants[curM][2]) + '">' 
+                       + text[ants[curM][0]:ants[curM][1]] + '</a>')
+            curM += 1
+        else:
+            newText += text[i]
+            
+    return newText
+    
