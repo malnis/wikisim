@@ -1,4 +1,5 @@
-#!/users/grad/sajadi/backup/anaconda2/bin/python
+#!/users/cs/amaral/anaconda2/bin/python
+#/users/grad/sajadi/backup/anaconda2/bin/python
 #/home/sajadi/anaconda2/bin/python
 
 
@@ -8,7 +9,7 @@ import cgi, cgitb
 import sys
 
 sys.path.insert(0,'..')
-from wikisim.wikify import *
+from wikification.wikification import annotateText
 
 log('cgi-wikify started');
 
@@ -29,23 +30,8 @@ if inputText == "":
 	exit()
 
 # get the wikification results
-anchors = wikify(inputText, True, method='popular')
-newText = ""
-anchors = sorted(anchors, key=itemgetter('start')) # make sure anchors are sorted
-anchorIndex = 0 # keep track of current anchor added
-i = 0 
-while i < len(inputText):
-    if anchorIndex < len(anchors) and i == anchors[anchorIndex]['start']:
-        anchor = anchors[anchorIndex]
-        newText += ("<a href=\"https://en.wikipedia.org/wiki/" + anchor['wikiTitle']
-                   + "\" target=\"_blank\">" + anchor['mention'] + "</a>")
-        i = anchors[anchorIndex]['end']
-        anchorIndex += 1
-    else:
-        newText += inputText[i]
-        i += 1
-
-print json.dumps({"text":newText})
+result = annotateText(inputText)
+print json.dumps({"text":result})
 		
 close()
 

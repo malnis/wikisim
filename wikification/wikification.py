@@ -442,7 +442,7 @@ def getGoodMentions(splitText, mentions, model):
             
     return finalMentions"""
     
-def mentionExtract(text, useCoreNLP = False):
+def mentionExtract(text, mthd = 'cnlp'):
     """
     Description:
         Takes in a text and splits it into the different words/mentions.
@@ -455,35 +455,46 @@ def mentionExtract(text, useCoreNLP = False):
         {'text':[w1,w2,...], 'mentions': [[wIndex,begin,end],...]}
     """
     
-    if useCoreNLP:
+    if mthd == 'cnlp':
         output = scnlp.annotate(text, properties={
             'annotators': 'entitymentions',
             'outputFormat': 'json'
         })
-        mentions = []
+        
+        # get all tokens together and all mentions together
+        tokens = []
+        mentions0 = []
         for sentence in output['sentences']:
+            for token in sentence['tokens']:
+                tokens.append(token['originalText'])
             for em in sentence['entitymentions']:
-                mentions.append([em['characterOffsetBegin'], em['characterOffsetEnd']])
-        curM = 0 # index of mention
-        splitText0 = text.split(' ')
+                mentions0.append(em)
+        
+        # put it all into splitText and mentions in the right way
         splitText = []
-        charSoFar = 0
-        skip = 0
-        curW = 0
-        for txt in splitText0:
-            if skip > 0:
-                skip -= 1
-                continue
-            if curM < len(mentions) and charSoFar == mentions[curM][0]:
-                skip = text[mentions[curM][0]:mentions[curM][1]].count(' ')
-                splitText.append(text[mentions[curM][0]:mentions[curM][1]])
-                mentions[curM].insert(0, curW)
+        mentions = []
+        curT = 0 # token index
+        curM = 0 # mention index
+        while(curT < len(tokens)):
+            if curM < len(mentions0) and curT == mentions0[curM]['docTokenBegin']:
+                # put in entity mention
+                splitText.append(mentions0[curM]['text'])
+                mentions.append([len(splitText) - 1,
+                                 mentions0[curM]['characterOffsetBegin'], 
+                                 mentions0[curM]['characterOffsetEnd']])
+                curT = mentions0[curM]['docTokenEnd']
                 curM += 1
+                continue
             else:
-                splitText.append(txt)
-            charSoFar += 1 + len(splitText[-1])
-            curW += 1
-    else:
+                # put in next token
+                splitText.append(tokens[curT])
+                curT += 1
+        print splitText
+        print
+        print mentions
+        print
+        
+    elif mthd == 'cls1':
         addr = 'http://localhost:8983/solr/enwikianchors20160305/tag'
         params={'overlaps':'LONGEST_DOMINANT_RIGHT', 'tagsLimit':'5000', 'fl':'id','wt':'json','indent':'on'}
         r = requests.post(addr, params=params, data=text.encode('utf-8'))
@@ -1575,7 +1586,7 @@ def annotateText(text, maxC = 20, hybridC = False, method = 'multi'):
             continue
         if curM < len(ants) and i == ants[curM][0]:
             skip = ants[curM][1] - ants[curM][0] - 1
-            newText += ('<a href="https://en.wikipedia.org/wiki/'
+            newText += ('<a target="_blank" href="https://en.wikipedia.org/wiki/'
                        + id2title(ants[curM][2]) + '">' 
                        + text[ants[curM][0]:ants[curM][1]] + '</a>')
             curM += 1
