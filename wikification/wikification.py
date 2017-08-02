@@ -26,6 +26,7 @@ from pycorenlp import StanfordCoreNLP
 scnlp = StanfordCoreNLP('http://localhost:9000')
 import copy
 from sklearn.preprocessing import OneHotEncoder
+from unidecode import unidecode
 
 
 MIN_MENTION_LENGTH = 3 # mentions must be at least this long
@@ -442,7 +443,7 @@ def getGoodMentions(splitText, mentions, model):
             
     return finalMentions"""
     
-def mentionExtract(text, mthd = 'cnlp'):
+def mentionExtract(text, mthd = 'cls1'):
     """
     Description:
         Takes in a text and splits it into the different words/mentions.
@@ -489,10 +490,6 @@ def mentionExtract(text, mthd = 'cnlp'):
                 # put in next token
                 splitText.append(tokens[curT])
                 curT += 1
-        print splitText
-        print
-        print mentions
-        print
         
     elif mthd == 'cls1':
         addr = 'http://localhost:8983/solr/enwikianchors20160305/tag'
@@ -1577,6 +1574,28 @@ def annotateText(text, maxC = 20, hybridC = False, method = 'multi'):
     # get the annotations
     ants = doWikify(text, maxC = maxC, hybridC = hybridC, method = method)
     
+    # get title and intro of each entity
+    strIds = ['id:' +  str(ant[2]) for ant in ants]
+    addr = 'http://localhost:8983/solr/enwiki20160305/select'
+    params={'fl':'title opening_text id', 'fq':" ".join(strIds), 
+            'indent':'on', 'q':'*:*', 'wt':'json', 'rows':str(len(ants))}
+    r = requests.get(addr, params = params)
+    try:
+        for doc in r.json()['response']['docs']:
+            # find ant with same id as doc
+            for ant in ants:
+                if len(ant) == 3 and str(ant[2]) == doc['id']:
+                    ant.extend([doc['title'], doc['opening_text'][:250] + '...'])
+    except:
+        pass
+    
+    # fill in all unfilled ants with thing
+    for ant in ants:
+        if len(ant) == 3:
+            ant.extend([id2title(ant[2]).replace('_', ' '), 'Description Not Found.'])
+            tmp = ant[3]
+            ant[3] = ''.join([i if ord(i) < 128 else '' for i in tmp]) # filter out non ascii, https://stackoverflow.com/questions/20078816/replace-non-ascii-characters-with-a-single-space
+    
     newText = '' # the text to return with anchor tags
     skip = 0
     curM = 0 # cur mention index
@@ -1586,9 +1605,12 @@ def annotateText(text, maxC = 20, hybridC = False, method = 'multi'):
             continue
         if curM < len(ants) and i == ants[curM][0]:
             skip = ants[curM][1] - ants[curM][0] - 1
-            newText += ('<a target="_blank" href="https://en.wikipedia.org/wiki/'
+            newText += ('<a class="toooltip" target="_blank" href="https://en.wikipedia.org/wiki/'
                        + id2title(ants[curM][2]) + '">' 
-                       + text[ants[curM][0]:ants[curM][1]] + '</a>')
+                       + text[ants[curM][0]:ants[curM][1]] 
+                       + '<span class="toooltiptext"><strong>' + unidecode(ants[curM][3]) + '</strong><br/>' 
+                       + unidecode(ants[curM][4])
+                       + '</span></a>')
             curM += 1
         else:
             newText += text[i]
