@@ -2170,3 +2170,123 @@ lmart:
     S Micro F1 :0.204929917835
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+maxC: 20
+2017-08-04 11:45:45.928574
+
+Doing popular candidate generation with new popular trained models without W2V.
+
+kore:
+multi:
+    S Micro F1 :0.542253521127
+AQUAINT:
+multi:
+    S Micro F1 :0.821897810219
+MSNBC:
+multi:
+    S Micro F1 :0.713850837139
+nopop:
+multi:
+    S Micro F1 :0.180763653939
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+maxC: 20
+2017-08-04 12:30:59.945701
+
+Doing popular candidate generation with new popular trained lmart.
+
+kore:
+multi:
+    S Micro F1 :0.549295774648
+AQUAINT:
+multi:
+    S Micro F1 :0.816058394161
+MSNBC:
+multi:
+    S Micro F1 :0.712328767123
+nopop:
+multi:
+    S Micro F1 :0.194780086999
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+maxC: 20
+2017-08-04 13:19:59.213915
+
+Doing popular candidate generation with new(10000) hybrid trained lmart.
+
+kore:
+multi:
+    S Micro F1 :0.556338028169
+AQUAINT:
+multi:
+    S Micro F1 :0.83795620438
+MSNBC:
+multi:
+    S Micro F1 :0.706240487062
+nopop:
+multi:
+    S Micro F1 :0.204929917835
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+maxC: 20
+2017-08-04 14:26:05.508258
+
+Doing popular candidate generation with 1 trained lmart.
+
+kore:
+multi:
+    S Micro F1 :0.577464788732
+AQUAINT:
+multi:
+    S Micro F1 :0.817518248175
+MSNBC:
+multi:
+    S Micro F1 :0.712328767123
+nopop:
+multi:
+    S Micro F1 :0.195988400193
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+maxC: 20
+2017-08-08 13:44:18.008407
+
+Doing popular candidate generation with hybrid trained lmart no w2v.
+
+kore:
+multi:
+    S Micro F1 :0.570422535211
+AQUAINT:
+multi:
+    S Micro F1 :0.829197080292
+MSNBC:
+multi:
+    S Micro F1 :0.709284627093
+nopop:
+multi:
+    S Micro F1 :0.195021749638
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+maxC: 20
+2017-08-09 12:10:10.850689
+
+Doing popular candidate generation with hybrid trained lmart.
+
+kore:
+multi:
+    S Micro F1 :0.556338028169
+AQUAINT:
+multi:
+    S Micro F1 :0.83795620438
+MSNBC:
+multi:
+    S Micro F1 :0.706240487062
+nopop:
+multi:
+    S Micro F1 :0.204929917835
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

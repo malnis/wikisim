@@ -1,4 +1,3 @@
-
 from __future__ import division
 import sys
 import pickle
@@ -287,7 +286,7 @@ posAftDict = {
     'FAIL':12
 }
      
-def getGoodMentions(splitText, mentions, model):
+def getGoodMentions(splitText, mentions, model, overlapFix = False):
     """
     Description: 
         Finds the potential mentions that are deemed good by our classifier.
@@ -295,6 +294,7 @@ def getGoodMentions(splitText, mentions, model):
         splitText: The text in split form.
         mentions: All of the potential mentions [word index, start offset, end offset].
         model: The machine learning model to predict with.
+        overlapFix: Whether there are overlaps that need to be dealt with.
     Return:
         A subset of arg mentions with each element deemed to be worthy by the classifier.
     """
@@ -407,41 +407,42 @@ def getGoodMentions(splitText, mentions, model):
             # put score of prediction
             goodMentions[-1].append(model.predict_proba([aMention])[0][1]) # put score of prediction
             
-    return goodMentions        
-    
-    """
-    #Remove all overlaps in results.
-    
-    # sort on prediction probability descending
-    goodMentions = sorted(goodMentions, key = itemgetter(-1), reverse = True)
-    
-    try:
-        goodlen = len(goodMentions[0])
-    except:
-        return []
-    
-    for mention1 in goodMentions:
-        if len(mention1) > goodlen:
-            continue
-        for mention2 in goodMentions:
-            # dont do anything with a previous or same one
-            if (mention2[0] == mention1[0] or
-                    mention1[-1] < mention2[-1] or
-                    len(mention2) > goodlen):
+    if overlapFix == False:
+        return goodMentions        
+    else:
+        """
+        Remove all overlaps in results.
+        """
+        # sort on prediction probability descending
+        goodMentions = sorted(goodMentions, key = itemgetter(-1), reverse = True)
+
+        try:
+            goodlen = len(goodMentions[0])
+        except:
+            return []
+
+        for mention1 in goodMentions:
+            if len(mention1) > goodlen:
                 continue
-            # flag 2 if 2 starts before 1 ends and 2 ends after 1 starts
-            if mention2[1] < mention1[2] and mention2[2] >= mention1[1]:
-                print 'Overlap found', str(mention1), str(mention2)
-                mention2.append(0) # just increase length to flag for deletion
-                
-    finalMentions = []
-    for mention in goodMentions:
-        if len(mention) == goodlen:
-            finalMentions.append(mention[:3])
-            
-    finalMentions = sorted(finalMentions, key = itemgetter(1), reverse = False)
-            
-    return finalMentions"""
+            for mention2 in goodMentions:
+                # dont do anything with a previous or same one
+                if (mention2[0] == mention1[0] or
+                        mention1[-1] < mention2[-1] or
+                        len(mention2) > goodlen):
+                    continue
+                # flag 2 if 2 starts before 1 ends and 2 ends after 1 starts
+                if mention2[1] < mention1[2] and mention2[2] >= mention1[1]:
+                    print 'Overlap found', str(mention1), str(mention2)
+                    mention2.append(0) # just increase length to flag for deletion
+
+        finalMentions = []
+        for mention in goodMentions:
+            if len(mention) == goodlen:
+                finalMentions.append(mention[:3])
+
+        finalMentions = sorted(finalMentions, key = itemgetter(1), reverse = False)
+
+        return finalMentions
     
 def mentionExtract(text, mthd = 'cls1'):
     """
@@ -494,6 +495,25 @@ def mentionExtract(text, mthd = 'cls1'):
     elif mthd == 'cls1':
         addr = 'http://localhost:8983/solr/enwikianchors20160305/tag'
         params={'overlaps':'LONGEST_DOMINANT_RIGHT', 'tagsLimit':'5000', 'fl':'id','wt':'json','indent':'on'}
+        r = requests.post(addr, params=params, data=text.encode('utf-8'))
+        textData0 = r.json()['tags']
+        splitText = [] # the text now in split form
+        mentions = [] # mentions before remove inadequate ones
+        textData = [] # [[begin,end,word,anchorProb],...]
+        i = 0 # for wordIndex
+        # get rid of extra un-needed Solr data
+        for item in textData0:
+            mentions.append([i, item[1], item[3]])
+            i += 1
+            # also fill split text
+            splitText.append(text[item[1]:item[3]])
+        if 'gbc-er' not in mlModels:
+            mlModels['gbc-er'] = pickle.load(open(mlModelFiles['gbc-er'], 'rb'))
+        mentions = getGoodMentions(splitText, mentions, mlModels['gbc-er'])
+        
+    elif mthd == 'cls2':
+        addr = 'http://localhost:8983/solr/enwikianchors20160305/tag'
+        params={'overlaps':'ALL', 'tagsLimit':'5000', 'fl':'id','wt':'json','indent':'on'}
         r = requests.post(addr, params=params, data=text.encode('utf-8'))
         textData0 = r.json()['tags']
         splitText = [] # the text now in split form
@@ -1349,7 +1369,7 @@ mlModelFiles = {
     'rfc': '/users/cs/amaral/wikisim/wikification/ml-models/model-rfc-10000-hyb.pkl',
     'lsvc': '/users/cs/amaral/wikisim/wikification/ml-models/model-lsvc-10000-hyb.pkl',
     'svc': '/users/cs/amaral/wikisim/wikification/ml-models/model-svc-10000-hyb.pkl',
-    'lmart': '/users/cs/amaral/wikisim/wikification/ml-models/model-lmart-10000-hyb.pkl',
+    'lmart': '/users/cs/amaral/wikisim/wikification/ml-models/model-lmart-10000-hyb-no-w2v.pkl',
     'gbc-er': '/users/cs/amaral/wikisim/wikification/ml-models/er/er-model-gbc-30000.pkl',
     'bgc-er': '/users/cs/amaral/wikisim/wikification/ml-models/er/er-model-bgc-30000.pkl'}
 
@@ -1411,11 +1431,12 @@ def wikifyMulti(textData, candidates, oText, model, useSentence = True, window =
                 candidates[i][j].append(cScrs[j])
 
             # get score form word2vec
-            cScrs = getWord2VecScores(contextS, candidates[i])
+            #cScrs = getWord2VecScores(contextS, candidates[i])
             #cScrs = normalize(cScrs)
             # apply score to candList
             for j in range(0, len(candidates[i])):
-                candidates[i][j].append(cScrs[j])
+                #candidates[i][j].append(cScrs[j])
+                candidates[i][j].append(0)
 
             # get score from coherence
             for j in range(0, len(candidates[i])):
@@ -1525,10 +1546,10 @@ def doWikify(text, maxC = 20, hybridC = False, method = 'multi'):
         A list of mentions where each element contains the character offset
         start and end, as well as the corresponding wikipedia page.
     """
-    
     # find the mentions
     # text data now has text in split form and, the mentions
     textData = mentionExtract(text)
+    
     
     # generate candidates
     candidates = generateCandidates(textData, maxC, hybridC)
@@ -1550,9 +1571,11 @@ def doWikify(text, maxC = 20, hybridC = False, method = 'multi'):
         wikified = wikifyCoherence(textData, candidates, ws = 5)
     elif method == 'multi':
         try:
-            word2vec
+            #word2vec
+            pass
         except:
-            word2vec = gensim_loadmodel('/users/cs/amaral/cgmdir/WikipediaClean5Negative300Skip10.Ehsan/WikipediaClean5Negative300Skip10')
+            #word2vec = gensim_loadmodel('/users/cs/amaral/cgmdir/WikipediaClean5Negative300Skip10.Ehsan/WikipediaClean5Negative300Skip10')
+            pass
         if 'lmart' not in mlModels:
             mlModels['lmart'] = pickle.load(open(mlModelFiles['lmart'], 'rb'))
         wikified = wikifyMulti(textData, candidates, text, 'lmart', useSentence = True, window = 7)
