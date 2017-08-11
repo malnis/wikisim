@@ -1476,7 +1476,8 @@ def wikifyMulti(textData, candidates, oText, model, useSentence = True, window =
         
     return topCandidates
 
-def wikifyEval(text, mentionsGiven, maxC = 20, method='popular', strict = False, hybridC = True, model = 'lmart'):
+def wikifyEval(text, mentionsGiven, maxC = 20, method='popular', 
+               strict = False, hybridC = True, model = 'lmart', erMethod = 'cls1'):
     """
     Description:
         Takes the text (maybe text data), and wikifies it for evaluation purposes using the desired method.
@@ -1491,6 +1492,7 @@ def wikifyEval(text, mentionsGiven, maxC = 20, method='popular', strict = False,
         model: What model to use if using machine learning based method. LambdaMART as 'lmart' is default.
             Other options are: 'gbc' (gradient boosted classifier), 'etr' (extra trees regression), 
             'gbr' (gradient boosted regression), and 'rfr' (random forest regression).
+        erMethod: The method to use for ER. 'cls1', 'cls2', 'cnlp'.
     Return:
         All of the proposed entities for the mentions, of the form: [[start,end,entityId],...].
     """
@@ -1502,7 +1504,7 @@ def wikifyEval(text, mentionsGiven, maxC = 20, method='popular', strict = False,
         text = text.replace(u'\u2013', '-')
         text = text.replace(u'\u2014', '-')
         text = text.replace(u'\u2015', '-')
-        textData = mentionExtract(text) # extract mentions from text
+        textData = mentionExtract(text, mthd = erMethod) # extract mentions from text
         oText = text # the original text
     else: # if they are
         textData = text
@@ -1541,7 +1543,7 @@ def wikifyEval(text, mentionsGiven, maxC = 20, method='popular', strict = False,
     
     return wikified
 
-def doWikify(text, maxC = 20, hybridC = False, method = 'multi'):
+def doWikify(text, maxC = 20, hybridC = False, method = 'multi', erMethod = 'cls1'):
     """
     Description:
         Takes in text, and returns the location of mentions as well as the
@@ -1554,7 +1556,7 @@ def doWikify(text, maxC = 20, hybridC = False, method = 'multi'):
     """
     # find the mentions
     # text data now has text in split form and, the mentions
-    textData = mentionExtract(text)
+    textData = mentionExtract(text, mthd = erMethod)
     
     
     # generate candidates
@@ -1588,7 +1590,7 @@ def doWikify(text, maxC = 20, hybridC = False, method = 'multi'):
     
     return wikified
 
-def annotateText(text, maxC = 20, hybridC = False, method = 'multi'):
+def annotateText(text, maxC = 20, hybridC = False, method = 'multi', erMethod = 'cls1'):
     """
     Description:
         Annotates text with html anchor tags linking to the wikipedia pages
