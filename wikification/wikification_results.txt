@@ -2174,7 +2174,7 @@ lmart:
 maxC: 20
 2017-08-04 11:45:45.928574
 
-Doing popular candidate generation with new popular trained models without W2V.
+Doing hybrid candidate generation with new popular trained models without W2V.
 
 kore:
 multi:
@@ -2194,7 +2194,7 @@ multi:
 maxC: 20
 2017-08-04 12:30:59.945701
 
-Doing popular candidate generation with new popular trained lmart.
+Doing hybrid candidate generation with new popular trained lmart.
 
 kore:
 multi:
@@ -2214,7 +2214,7 @@ multi:
 maxC: 20
 2017-08-04 13:19:59.213915
 
-Doing popular candidate generation with new(10000) hybrid trained lmart.
+Doing hybrid candidate generation with new(10000) hybrid trained lmart.
 
 kore:
 multi:
@@ -2234,7 +2234,7 @@ multi:
 maxC: 20
 2017-08-04 14:26:05.508258
 
-Doing popular candidate generation with 1 trained lmart.
+Doing hybrid candidate generation with 1 trained lmart.
 
 kore:
 multi:
@@ -2254,7 +2254,7 @@ multi:
 maxC: 20
 2017-08-08 13:44:18.008407
 
-Doing popular candidate generation with hybrid trained lmart no w2v.
+Doing hybrid candidate generation with hybrid trained lmart no w2v.
 
 kore:
 multi:
@@ -2274,7 +2274,7 @@ multi:
 maxC: 20
 2017-08-09 12:10:10.850689
 
-Doing popular candidate generation with hybrid trained lmart.
+Doing hybrid candidate generation with hybrid trained lmart.
 
 kore:
 multi:
@@ -2288,5 +2288,45 @@ multi:
 nopop:
 multi:
     S Micro F1 :0.204929917835
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+maxC: 20
+2017-08-11 12:35:55.538763
+
+Doing popular candidate generation with hybrid trained lmart no w2v.
+
+kore:
+multi:
+    S Micro F1 :0.584507042254
+AQUAINT:
+multi:
+    S Micro F1 :0.828283889202
+MSNBC:
+multi:
+    S Micro F1 :0.720100992598
+nopop:
+multi:
+    S Micro F1 :0.225954567424
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+maxC: 20
+2017-08-11 13:38:11.245867
+
+Doing popular candidate generation with popular trained lmart no w2v.
+
+kore:
+multi:
+    S Micro F1 :0.570422535211
+AQUAINT:
+multi:
+    S Micro F1 :0.854751410517
+MSNBC:
+multi:
+    S Micro F1 :0.735171719802
+nopop:
+multi:
+    S Micro F1 :0.217013049783
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

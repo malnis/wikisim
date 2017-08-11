@@ -457,7 +457,7 @@ def mentionExtract(text, mthd = 'cls1'):
         {'text':[w1,w2,...], 'mentions': [[wIndex,begin,end],...]}
     """
     
-    if mthd == 'cnlp':
+    if mthd == 'cnlp': # use CoreNLP's entity mention annotator
         output = scnlp.annotate(text, properties={
             'annotators': 'entitymentions',
             'outputFormat': 'json'
@@ -492,7 +492,7 @@ def mentionExtract(text, mthd = 'cls1'):
                 splitText.append(tokens[curT])
                 curT += 1
         
-    elif mthd == 'cls1':
+    elif mthd == 'cls1': # this one lest solr deal with overlaps
         addr = 'http://localhost:8983/solr/enwikianchors20160305/tag'
         params={'overlaps':'LONGEST_DOMINANT_RIGHT', 'tagsLimit':'5000', 'fl':'id','wt':'json','indent':'on'}
         r = requests.post(addr, params=params, data=text.encode('utf-8'))
@@ -511,7 +511,7 @@ def mentionExtract(text, mthd = 'cls1'):
             mlModels['gbc-er'] = pickle.load(open(mlModelFiles['gbc-er'], 'rb'))
         mentions = getGoodMentions(splitText, mentions, mlModels['gbc-er'])
         
-    elif mthd == 'cls2':
+    elif mthd == 'cls2': # this one we deal with overlaps
         addr = 'http://localhost:8983/solr/enwikianchors20160305/tag'
         params={'overlaps':'ALL', 'tagsLimit':'5000', 'fl':'id','wt':'json','indent':'on'}
         r = requests.post(addr, params=params, data=text.encode('utf-8'))
@@ -1369,7 +1369,7 @@ mlModelFiles = {
     'rfc': '/users/cs/amaral/wikisim/wikification/ml-models/model-rfc-10000-hyb.pkl',
     'lsvc': '/users/cs/amaral/wikisim/wikification/ml-models/model-lsvc-10000-hyb.pkl',
     'svc': '/users/cs/amaral/wikisim/wikification/ml-models/model-svc-10000-hyb.pkl',
-    'lmart': '/users/cs/amaral/wikisim/wikification/ml-models/model-lmart-10000-hyb-no-w2v.pkl',
+    'lmart': '/users/cs/amaral/wikisim/wikification/ml-models/model-lmart-10000-pop-no-w2v.pkl',
     'gbc-er': '/users/cs/amaral/wikisim/wikification/ml-models/er/er-model-gbc-30000.pkl',
     'bgc-er': '/users/cs/amaral/wikisim/wikification/ml-models/er/er-model-bgc-30000.pkl'}
 
@@ -1430,7 +1430,7 @@ def wikifyMulti(textData, candidates, oText, model, useSentence = True, window =
             for j in range(0, len(candidates[i])):
                 candidates[i][j].append(cScrs[j])
 
-            # get score form word2vec
+            # get score from word2vec
             #cScrs = getWord2VecScores(contextS, candidates[i])
             #cScrs = normalize(cScrs)
             # apply score to candList
@@ -1496,6 +1496,12 @@ def wikifyEval(text, mentionsGiven, maxC = 20, method='popular', strict = False,
     """
     
     if not(mentionsGiven): # if words are not in pre-split form
+        text = text.replace(u'\u2010', '-')
+        text = text.replace(u'\u2011', '-')
+        text = text.replace(u'\u2012', '-')
+        text = text.replace(u'\u2013', '-')
+        text = text.replace(u'\u2014', '-')
+        text = text.replace(u'\u2015', '-')
         textData = mentionExtract(text) # extract mentions from text
         oText = text # the original text
     else: # if they are
@@ -1593,6 +1599,13 @@ def annotateText(text, maxC = 20, hybridC = False, method = 'multi'):
         The text where the mentions are in anchor tags that link to the 
         corresponding wikipedia page.
     """
+    
+    text = text.replace(u'\u2010', '-')
+    text = text.replace(u'\u2011', '-')
+    text = text.replace(u'\u2012', '-')
+    text = text.replace(u'\u2013', '-')
+    text = text.replace(u'\u2014', '-')
+    text = text.replace(u'\u2015', '-')
     
     # get the annotations
     ants = doWikify(text, maxC = maxC, hybridC = hybridC, method = method)
