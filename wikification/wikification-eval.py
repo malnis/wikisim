@@ -24,10 +24,10 @@ datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')},
 
 # many different option for combinations of datasets for smaller tests
 #datasets = [{'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')}]
-datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}]
+#datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}]
 #datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}]
 #datasets = [{'name':'wiki5000', 'path':os.path.join(pathStrt,'wiki-mentions.5000.json')}]
-#datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')}]
+datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')},{'name':'nopop', 'path':os.path.join(pathStrt,'nopop.json')}]
 #datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')},{'name':'wiki500', 'path':os.path.join(pathStrt,'wiki-mentions.500.json')}]
 #datasets = [{'name':'nopop', 'path':os.path.join(pathStrt,'nopop.json')}]
 #datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')},{'name':'wiki500', 'path':os.path.join(pathStrt,'wiki-mentions.500.json')},{'name':'nopop', 'path':os.path.join(pathStrt,'nopop.json')}]
@@ -49,7 +49,7 @@ if 'word2vec' in methods:
         
 # can do both, none would be pointless
 doSplit = True # mentions are given
-doManual = False # mentions not given
+doManual = True # mentions not given
 
 verbose = True # decides how much stuff to ouput
 
@@ -58,6 +58,8 @@ doHybrid = False # whether to do hybrid candidate generation (False prefered)
 
 
 performances = {} # record data here
+
+skipped = 0
 
 # for each dataset, run all methods
 for dataset in datasets:
@@ -100,6 +102,8 @@ for dataset in datasets:
         totalBotMacroRecM = 0
         # amount of lines done in dataset
         totalLines = 0
+        # amount of mentions in dataset
+        totalMentions = 0 
         
         # each method tests all lines
         for line in dataLines:
@@ -114,8 +118,12 @@ for dataset in datasets:
             # get results for pre split string
             if doSplit and mthd <> 'tagme': # presplit no work on tagme
                 # original split string with mentions given
-                resultS = wikifyEval(copy.deepcopy(line), True, hybridC = doHybrid, maxC = maxCands, 
-                                     method = mthd, model = mlModel, erMethod = erMethod)
+                try:
+                    resultS = wikifyEval(copy.deepcopy(line), True, hybridC = doHybrid, maxC = maxCands, 
+                                         method = mthd, model = mlModel, erMethod = erMethod)
+                except:
+                    skipped += 1
+                    continue
                 precS = precision(trueEntities, resultS) # precision of pre-split
                 recS = recall(trueEntities, resultS) # recall of pre-split
                 
@@ -133,8 +141,16 @@ for dataset in datasets:
                 mySet = Set()
                 for res in resultS:
                     mySet.add(res[2])
-                precS = len(trueSet & mySet)/len(mySet)
-                recS = len(trueSet & mySet)/len(trueSet)
+                    
+                try:
+                    precS = len(trueSet & mySet)/len(mySet)
+                except:
+                    precS = 0
+                    
+                try:
+                    recS = len(trueSet & mySet)/len(trueSet)
+                except:
+                    recS = 0
                 
                 # BOT micro scores
                 totalBotMicroPrecS += len(trueSet) * precS
@@ -156,8 +172,12 @@ for dataset in datasets:
                         resultM.append([an.begin,an.end,title2id(an.entity_title)])
                 else:
                     # unsplit string to be manually split and mentions found
-                    resultM = wikifyEval(" ".join(line['text']), True, hybridC = doHybrid, 
+                    try:
+                        resultM = wikifyEval(" ".join(line['text']), False, hybridC = doHybrid, 
                                          maxC = maxCands, method = mthd, model = mlModel, erMethod = erMethod)
+                    except:
+                        skipped += 1
+                        continue
                 
                 precM = precision(trueEntities, resultM) # precision of manual split
                 recM = recall(trueEntities, resultM) # recall of manual split
@@ -180,8 +200,16 @@ for dataset in datasets:
                 mySet = Set()
                 for res in resultM:
                     mySet.add(res[2])
-                precM = len(trueSet & mySet)/len(mySet)
-                recM = len(trueSet & mySet)/len(trueSet)
+                    
+                try:
+                    precM = len(trueSet & mySet)/len(mySet)
+                except:
+                    precM = 0
+                    
+                try:
+                    recM = len(trueSet & mySet)/len(trueSet)
+                except:
+                    recM = 0
                 
                 # BOT micro scores
                 totalBotMicroPrecM += len(trueSet) * precM
@@ -194,38 +222,86 @@ for dataset in datasets:
                     print 'Manual: ' + str(precM) + ', ' + str(recM)
                 
             totalLines += 1
+            totalMentions += len(trueEntities)
         
         # record results for this method on this dataset
+        # all F1 scores are put in later to avoid division by 0 possibility
         performances[dataset['name']][mthd] = {
-                   'S Micro Prec':1/1, 
-                   'M Micro Prec':1/1,
-                   'S Micro Rec':1/1, 
-                   'M Micro Rec':1/1,
-                   'S Micro F1':1/1,
-                   'M Micro F1':1/1,
+                   'S Micro Prec':totalMicroPrecS/totalMentions, 
+                   'M Micro Prec':totalMicroPrecM/totalMentions,
+                   'S Micro Rec':totalMicroRecS/totalMentions, 
+                   'M Micro Rec':totalMicroRecM/totalMentions,
 
                    'S Macro Prec':totalMacroPrecS/totalLines,
                    'M Macro Prec':totalMacroPrecM/totalLines,
                    'S Macro Rec':totalMacroRecS/totalLines, 
                    'M Macro Rec':totalMacroRecM/totalLines,
-                   'S Macro F1':(2*totalMacroPrecS*totalMacroRecS)/(totalMacroPrecS+totalMacroRecS),
-                   'M Macro F1':(2*totalMacroPrecM*totalMacroRecM)/(totalMacroPrecM+totalMacroRecM),
 
-                   'S BOT Micro Prec':1/1, 
-                   'M BOT Micro Prec':1/1,
-                   'S BOT Micro Rec':1/1, 
-                   'M BOT Micro Rec':1/1,
-                   'S BOT Micro F1':1/1,
-                   'M BOT Micro F1':1/1,
+                   'S BOT Micro Prec':totalBotMicroPrecS/totalMentions, 
+                   'M BOT Micro Prec':totalBotMicroPrecM/totalMentions,
+                   'S BOT Micro Rec':totalBotMicroRecS/totalMentions, 
+                   'M BOT Micro Rec':totalBotMicroRecM/totalMentions,
 
                    'S BOT Macro Prec':totalBotMacroPrecS/totalLines,
                    'M BOT Macro Prec':totalBotMacroPrecM/totalLines,
                    'S BOT Macro Rec':totalBotMacroRecS/totalLines, 
-                   'M BOT Macro Rec':totalBotMacroRecM/totalLines,
-                   'S BOT Macro F1':(2*totalBotMacroPrecS*totalBotMacroRecS)/(totalBotMacroPrecS+totalBotMacroRecS),
-                   'M BOT Macro F1':(2*totalBotMacroPrecM*totalBotMacroRecM)/(totalBotMacroPrecM+totalBotMacroRecM)
+                   'M BOT Macro Rec':totalBotMacroRecM/totalLines
                    }
-
+        
+        perf = performances[dataset['name']][mthd]
+        # hande divisions by 0 for F1 scores here
+        # s and m micro f1
+        try:
+            performances[dataset['name']][mthd]['S Micro F1'] = (
+                    (2*perf['S Micro Prec']*perf['S Micro Rec'])/(perf['S Micro Prec']+perf['S Micro Rec']))
+        except:
+            performances[dataset['name']][mthd]['S Micro F1'] = 0
+            
+        try:
+            performances[dataset['name']][mthd]['M Micro F1'] = (
+                    (2*perf['M Micro Prec']*perf['M Micro Rec'])/(perf['M Micro Prec']+perf['M Micro Rec']))
+        except:
+            performances[dataset['name']][mthd]['M Micro F1'] = 0
+        
+        # s and m macro f1
+        try:
+            performances[dataset['name']][mthd]['S Macro F1'] = (
+                    (2*perf['S Macro Prec']*perf['S Macro Rec'])/(perf['S Macro Prec']+perf['S Macro Rec']))
+        except:
+            performances[dataset['name']][mthd]['S Macro F1'] = 0
+            
+        try:
+            performances[dataset['name']][mthd]['M Macro F1'] = (
+                    (2*perf['M Macro Prec']*perf['M Macro Rec'])/(perf['M Macro Prec']+perf['M Macro Rec']))
+        except:
+            performances[dataset['name']][mthd]['M Macro F1'] = 0
+        
+        # s and m, micro and macro for BOT f1
+        try:
+            performances[dataset['name']][mthd]['S BOT Micro F1'] = (
+                    (2*perf['S BOT Micro Prec']*perf['S BOT Micro Rec'])/(perf['S BOT Micro Prec']+perf['S BOT Micro Rec']))
+        except:
+            performances[dataset['name']][mthd]['S BOT Micro F1'] = 0
+            
+        try:
+            performances[dataset['name']][mthd]['M BOT Micro F1'] = (
+                    (2*perf['M BOT Micro Prec']*perf['M BOT Micro Rec'])/(perf['M BOT Micro Prec']+perf['M BOT Micro Rec']))
+        except:
+            performances[dataset['name']][mthd]['M BOT Micro F1'] = 0
+        
+        try:
+            performances[dataset['name']][mthd]['S BOT Macro F1'] = (
+                    (2*perf['S BOT Macro Prec']*perf['S BOT Macro Rec'])/(perf['S BOT Macro Prec']+perf['S BOT Macro Rec']))
+        except:
+            performances[dataset['name']][mthd]['S BOT Macro F1'] = 0
+            
+        try:
+            performances[dataset['name']][mthd]['M BOT Macro F1'] = (
+                    (2*perf['M BOT Micro Prec']*perf['M BOT Micro Rec'])/(perf['M BOT Micro Prec']+perf['M BOT Micro Rec']))
+        except:
+            performances[dataset['name']][mthd]['M BOT Macro F1'] = 0
+        
+print skipped
 with open('/users/cs/amaral/wikisim/wikification/wikification_results.txt', 'a') as resultFile:
     resultFile.write('\n' + str(datetime.now()) + '\n' 
                      + 'maxCands: ' + str(maxCands) + '\n'
