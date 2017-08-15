@@ -2564,3 +2564,282 @@ multi:
     M BOT Macro F1 :0.328227884545
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+2017-08-14 20:00:43.510222
+maxCands: 20
+mlModel: lmart
+erMethod: cls1
+doHybrid: False
+2017-08-14 20:00:43.510262
+
+Comment: 
+
+kore:
+multi:
+    S Micro Prec :0.570422535211
+    S Micro Rec :0.56338028169
+    S Micro F1 :0.566879538098
+    S Macro Prec :0.559666666667
+    S Macro Rec :0.553
+    S Macro F1 :0.556313361294
+    S BOT Micro Prec :0.570422535211
+    S BOT Micro Rec :0.56338028169
+    S BOT Micro F1 :0.566879538098
+    S BOT Macro Prec :0.559666666667
+    S BOT Macro Rec :0.553
+    S BOT Macro F1 :0.556313361294
+
+    M Micro Prec :0.289067739772
+    M Micro Rec :0.345070422535
+    M Micro F1 :0.31459619696
+    M Macro Prec :0.279428571429
+    M Macro Rec :0.354666666667
+    M Macro F1 :0.312583959147
+    M BOT Micro Prec :0.307377598927
+    M BOT Micro Rec :0.352112676056
+    M BOT Micro F1 :0.328227884545
+    M BOT Macro Prec :0.302761904762
+    M BOT Macro Rec :0.364666666667
+    M BOT Macro F1 :0.328227884545
+AQUAINT:
+multi:
+    S Micro Prec :0.854751410517
+    S Micro Rec :0.814598540146
+    S Micro F1 :0.834192076884
+    S Macro Prec :0.855943393305
+    S Macro Rec :0.810982076265
+    S Macro F1 :0.832856372933
+    S BOT Micro Prec :0.863497121416
+    S BOT Micro Rec :0.814598540146
+    S BOT Micro F1 :0.838335394862
+    S BOT Macro Prec :0.862952245564
+    S BOT Macro Rec :0.810982076265
+    S BOT Macro F1 :0.836160409281
+
+    M Micro Prec :0.183971890746
+    M Micro Rec :0.52700729927
+    M Micro F1 :0.272735209821
+    M Macro Prec :0.164096299716
+    M Macro Rec :0.520219428733
+    M Macro F1 :0.249493266768
+    M BOT Micro Prec :0.248906811946
+    M BOT Micro Rec :0.602919708029
+    M BOT Micro F1 :0.352350669686
+    M BOT Macro Prec :0.225381632123
+    M BOT Macro Rec :0.597135094479
+    M BOT Macro F1 :0.352350669686
+MSNBC:
+multi:
+    S Micro Prec :0.735171719802
+    S Micro Rec :0.704718417047
+    S Micro F1 :0.719623028699
+    S Macro Prec :0.791702910019
+    S Macro Rec :0.750694520302
+    S Macro F1 :0.770653561235
+    S BOT Micro Prec :0.388094844003
+    S BOT Micro Rec :0.415525114155
+    S BOT Micro F1 :0.401341835081
+    S BOT Macro Prec :0.812606411194
+    S BOT Macro Rec :0.882482358328
+    S BOT Macro F1 :0.846104151047
+
+    M Micro Prec :0.202020902447
+    M Micro Rec :0.517503805175
+    M Micro F1 :0.29059901525
+    M Macro Prec :0.187607616566
+    M Macro Rec :0.557443594099
+    M Macro F1 :0.280734163134
+    M BOT Micro Prec :0.0901713143884
+    M BOT Micro Rec :0.362252663623
+    M BOT Micro F1 :0.144399061089
+    M BOT Macro Prec :0.165952966421
+    M BOT Macro Rec :0.763394203835
+    M BOT Macro F1 :0.144399061089
+nopop:
+multi:
+    S Micro Prec :0.219613597457
+    S Micro Rec :0.219613597457
+    S Micro F1 :0.219613597457
+    S Macro Prec :0.148377419944
+    S Macro Rec :0.148377419944
+    S Macro F1 :0.148377419944
+    S BOT Micro Prec :0.21833442026
+    S BOT Micro Rec :0.216678894595
+    S BOT Micro F1 :0.217503507219
+    S BOT Macro Prec :0.150825205251
+    S BOT Macro Rec :0.149477206631
+    S BOT Macro F1 :0.15014818049
+
+    M Micro Prec :0.0448211683852
+    M Micro Rec :0.292736610418
+    M Micro F1 :0.077739561829
+    M Macro Prec :0.0378601697453
+    M Macro Rec :0.308691139778
+    M Macro F1 :0.0674480149386
+    M BOT Micro Prec :0.0521020790786
+    M BOT Micro Rec :0.330887747616
+    M BOT Micro F1 :0.0900281855589
+    M BOT Macro Prec :0.0450922862671
+    M BOT Macro Rec :0.352147488984
+    M BOT Macro F1 :0.0900281855589
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+2017-08-15 11:34:03.986341
+maxCands: 20
+mlModel: lmart
+erMethod: cls1
+doHybrid: False
+2017-08-15 11:34:03.986384
+
+Comment: 
+
+kore:
+multi:
+    S Micro Prec :0.571428571429
+    S Micro Rec :0.56338028169
+    S Micro F1 :0.567375886525
+    S Macro Prec :0.559666666667
+    S Macro Rec :0.553
+    S Macro F1 :0.556313361294
+    S BOT Micro Prec :0.578571428571
+    S BOT Micro Rec :0.56338028169
+    S BOT Micro F1 :0.570874812792
+    S BOT Macro Prec :0.559666666667
+    S BOT Macro Rec :0.553
+    S BOT Macro F1 :0.556313361294
+
+    M Micro Prec :0.240044555834
+    M Micro Rec :0.345070422535
+    M Micro F1 :0.283131621548
+    M Macro Prec :0.279428571429
+    M Macro Rec :0.354666666667
+    M Macro F1 :0.312583959147
+    M BOT Micro Prec :0.255249234197
+    M BOT Micro Rec :0.352112676056
+    M BOT Micro F1 :0.295956955473
+    M BOT Macro Prec :0.302761904762
+    M BOT Macro Rec :0.364666666667
+    M BOT Macro F1 :0.295956955473
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+2017-08-15 14:57:34.240188
+maxCands: 20
+mlModel: lmart
+erMethod: cls1
+doHybrid: False
+2017-08-15 14:57:34.240233
+
+Comment: 
+
+kore:
+multi:
+    S Micro Prec :0.571428571429
+    S Micro Rec :0.56338028169
+    S Micro F1 :0.567375886525
+    S Macro Prec :0.559666666667
+    S Macro Rec :0.553
+    S Macro F1 :0.556313361294
+    S BOT Micro Prec :0.578571428571
+    S BOT Micro Rec :0.56338028169
+    S BOT Micro F1 :0.570874812792
+    S BOT Macro Prec :0.559666666667
+    S BOT Macro Rec :0.553
+    S BOT Macro F1 :0.556313361294
+
+    M Micro Prec :0.240044555834
+    M Micro Rec :0.345070422535
+    M Micro F1 :0.283131621548
+    M Macro Prec :0.279428571429
+    M Macro Rec :0.354666666667
+    M Macro F1 :0.312583959147
+    M BOT Micro Prec :0.255249234197
+    M BOT Micro Rec :0.352112676056
+    M BOT Micro F1 :0.295956955473
+    M BOT Macro Prec :0.302761904762
+    M BOT Macro Rec :0.364666666667
+    M BOT Macro F1 :0.295956955473
+AQUAINT:
+multi:
+    S Micro Prec :0.854517611026
+    S Micro Rec :0.814598540146
+    S Micro F1 :0.834080717489
+    S Macro Prec :0.855943393305
+    S Macro Rec :0.810982076265
+    S Macro F1 :0.832856372933
+    S BOT Micro Prec :0.905812447427
+    S BOT Micro Rec :0.814598540146
+    S BOT Micro F1 :0.857787473633
+    S BOT Macro Prec :0.862952245564
+    S BOT Macro Rec :0.810982076265
+    S BOT Macro F1 :0.836160409281
+
+    M Micro Prec :0.0584783040189
+    M Micro Rec :0.52700729927
+    M Micro F1 :0.105274981635
+    M Macro Prec :0.164096299716
+    M Macro Rec :0.520219428733
+    M Macro F1 :0.249493266768
+    M BOT Micro Prec :0.0791188706186
+    M BOT Micro Rec :0.602919708029
+    M BOT Micro F1 :0.139881607482
+    M BOT Macro Prec :0.225381632123
+    M BOT Macro Rec :0.597135094479
+    M BOT Macro F1 :0.139881607482
+MSNBC:
+multi:
+    S Micro Prec :0.731437598736
+    S Micro Rec :0.704718417047
+    S Micro F1 :0.717829457364
+    S Macro Prec :0.791702910019
+    S Macro Rec :0.750694520302
+    S Macro F1 :0.770653561235
+    S BOT Micro Prec :0.402809340459
+    S BOT Micro Rec :0.415525114155
+    S BOT Micro F1 :0.409068434631
+    S BOT Macro Prec :0.812606411194
+    S BOT Macro Rec :0.882482358328
+    S BOT Macro F1 :0.846104151047
+
+    M Micro Prec :0.0706750441469
+    M Micro Rec :0.517503805175
+    M Micro F1 :0.124365588185
+    M Macro Prec :0.187607616566
+    M Macro Rec :0.557443594099
+    M Macro F1 :0.280734163134
+    M BOT Micro Prec :0.0315455556726
+    M BOT Micro Rec :0.362252663623
+    M BOT Micro F1 :0.0580371419064
+    M BOT Macro Prec :0.165952966421
+    M BOT Macro Rec :0.763394203835
+    M BOT Macro F1 :0.0580371419064
+nopop:
+multi:
+    S Micro Prec :0.217013049783
+    S Micro Rec :0.219613597457
+    S Micro F1 :0.21830557919
+    S Macro Prec :0.148377419944
+    S Macro Rec :0.148377419944
+    S Macro F1 :0.148377419944
+    S BOT Micro Prec :0.215749019924
+    S BOT Micro Rec :0.216678894595
+    S BOT Micro F1 :0.216212957478
+    S BOT Macro Prec :0.150825205251
+    S BOT Macro Rec :0.149477206631
+    S BOT Macro F1 :0.15014818049
+
+    M Micro Prec :0.00463784592775
+    M Micro Rec :0.292736610418
+    M Micro F1 :0.0091310283554
+    M Macro Prec :0.0378601697453
+    M Macro Rec :0.308691139778
+    M Macro F1 :0.0674480149386
+    M BOT Micro Prec :0.00539123418661
+    M BOT Micro Rec :0.330887747616
+    M BOT Micro F1 :0.010609603534
+    M BOT Macro Prec :0.0450922862671
+    M BOT Macro Rec :0.352147488984
+    M BOT Macro F1 :0.010609603534
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -432,7 +432,7 @@ def getGoodMentions(splitText, mentions, model, overlapFix = False):
                     continue
                 # flag 2 if 2 starts before 1 ends and 2 ends after 1 starts
                 if mention2[1] < mention1[2] and mention2[2] >= mention1[1]:
-                    print 'Overlap found', str(mention1), str(mention2)
+                    #print 'Overlap found', str(mention1), str(mention2)
                     mention2.append(0) # just increase length to flag for deletion
 
         finalMentions = []
@@ -528,9 +528,20 @@ def mentionExtract(text, mthd = 'cls1'):
             splitText.append(text[item[1]:item[3]])
         if 'gbc-er' not in mlModels:
             mlModels['gbc-er'] = pickle.load(open(mlModelFiles['gbc-er'], 'rb'))
-        mentions = getGoodMentions(splitText, mentions, mlModels['gbc-er'])
+        mentions = getGoodMentions(splitText, mentions, mlModels['gbc-er'], True)
     
-    return {'text':splitText, 'mentions':mentions}
+    # filter out mentions
+    filters = []
+    with open('/users/cs/amaral/wikisim/wikification/mentions-filter.txt', 'r') as f:
+        for line in f:
+            filters.append(line.strip())
+            
+    goodMentions = []
+    for mention in mentions:
+        if splitText[mention[0]] not in filters:
+            goodMentions.append(mention)
+    
+    return {'text':splitText, 'mentions':goodMentions}
 
 def getMentionsInSentence(textData, mainWord):
     """
@@ -624,7 +635,7 @@ def generateCandidates(textData, maxC, hybrid = False):
             # select all the docs from Solr with the best scores, highest first.
             addr = 'http://localhost:8983/solr/enwiki20160305/select'
             
-            if len(ctxStr) == 0:
+            if len(ctxStr) >= 0:
                 params={'fl':'id', 'indent':'on', 'fq':" ".join(strIds),
                         'q':'title:(' + mentionStr.encode('utf-8')+')^5',
                         'wt':'json', 'rows': str(ctxC)}
@@ -1590,7 +1601,7 @@ def doWikify(text, maxC = 20, hybridC = False, method = 'multi', erMethod = 'cls
     
     return wikified
 
-def annotateText(text, maxC = 20, hybridC = False, method = 'multi', erMethod = 'cls1'):
+def annotateText(text, maxC = 20, hybridC = False, method = 'multi', erMethod = 'cls2'):
     """
     Description:
         Annotates text with html anchor tags linking to the wikipedia pages
@@ -1610,7 +1621,7 @@ def annotateText(text, maxC = 20, hybridC = False, method = 'multi', erMethod = 
     text = text.replace(u'\u2015', '-')
     
     # get the annotations
-    ants = doWikify(text, maxC = maxC, hybridC = hybridC, method = method)
+    ants = doWikify(text, maxC = maxC, hybridC = hybridC, method = method, erMethod = erMethod)
     
     # get title and intro of each entity
     strIds = ['id:' +  str(ant[2]) for ant in ants]

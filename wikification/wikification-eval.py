@@ -24,16 +24,17 @@ datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')},
 
 # many different option for combinations of datasets for smaller tests
 #datasets = [{'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')}]
-#datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}]
+datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}]
 #datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}]
 #datasets = [{'name':'wiki5000', 'path':os.path.join(pathStrt,'wiki-mentions.5000.json')}]
-datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')},{'name':'nopop', 'path':os.path.join(pathStrt,'nopop.json')}]
+#datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')},{'name':'nopop', 'path':os.path.join(pathStrt,'nopop.json')}]
 #datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')},{'name':'wiki500', 'path':os.path.join(pathStrt,'wiki-mentions.500.json')}]
 #datasets = [{'name':'nopop', 'path':os.path.join(pathStrt,'nopop.json')}]
 #datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')},{'name':'wiki500', 'path':os.path.join(pathStrt,'wiki-mentions.500.json')},{'name':'nopop', 'path':os.path.join(pathStrt,'nopop.json')}]
 #datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')},{'name':'wiki5000', 'path':os.path.join(pathStrt,'wiki-mentions.5000.json')},{'name':'nopop', 'path':os.path.join(pathStrt,'nopop.json')}]
 #datasets = [{'name':'wiki500', 'path':os.path.join(pathStrt,'wiki-mentions.500.json')}]
 #datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')},{'name':'wiki5000', 'path':os.path.join(pathStrt,'wiki-mentions.5000.json')},{'name':'nopop', 'path':os.path.join(pathStrt,'nopop.json')}]
+datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')},{'name':'nopop', 'path':os.path.join(pathStrt,'nopop.json')}]
 
 # 'popular', 'context1', 'context2', 'word2vec', 'coherence', 'tagme', 'multi'
 methods = ['multi']
@@ -60,6 +61,7 @@ doHybrid = False # whether to do hybrid candidate generation (False prefered)
 performances = {} # record data here
 
 skipped = 0
+badThing = []
 
 # for each dataset, run all methods
 for dataset in datasets:
@@ -104,6 +106,9 @@ for dataset in datasets:
         totalLines = 0
         # amount of mentions in dataset
         totalMentions = 0 
+        # amount of mentions found
+        totalMyMentionsS = 0
+        totalMyMentionsM = 0
         
         # each method tests all lines
         for line in dataLines:
@@ -123,12 +128,13 @@ for dataset in datasets:
                                          method = mthd, model = mlModel, erMethod = erMethod)
                 except:
                     skipped += 1
+                    badThing.append(line)
                     continue
                 precS = precision(trueEntities, resultS) # precision of pre-split
                 recS = recall(trueEntities, resultS) # recall of pre-split
                 
                 # micro scores
-                totalMicroPrecS += len(trueEntities) * precS
+                totalMicroPrecS += len(resultS) * precS
                 totalMicroRecS += len(trueEntities) * recS
                 # macro scores
                 totalMacroPrecS += precS
@@ -159,6 +165,8 @@ for dataset in datasets:
                 totalBotMacroPrecS += precS
                 totalBotMacroRecS += recS
                 
+                totalMyMentionsS += len(resultS)
+                
                 if verbose:
                     print 'Split: ' + str(precS) + ', ' + str(recS)
                 
@@ -177,6 +185,7 @@ for dataset in datasets:
                                          maxC = maxCands, method = mthd, model = mlModel, erMethod = erMethod)
                     except:
                         skipped += 1
+                        badThing.append(line)
                         continue
                 
                 precM = precision(trueEntities, resultM) # precision of manual split
@@ -218,6 +227,8 @@ for dataset in datasets:
                 totalBotMacroPrecM += precM
                 totalBotMacroRecM += recM
                 
+                totalMyMentionsM += len(resultM)
+                
                 if verbose:
                     print 'Manual: ' + str(precM) + ', ' + str(recM)
                 
@@ -227,8 +238,8 @@ for dataset in datasets:
         # record results for this method on this dataset
         # all F1 scores are put in later to avoid division by 0 possibility
         performances[dataset['name']][mthd] = {
-                   'S Micro Prec':totalMicroPrecS/totalMentions, 
-                   'M Micro Prec':totalMicroPrecM/totalMentions,
+                   'S Micro Prec':totalMicroPrecS/totalMyMentionsS, 
+                   'M Micro Prec':totalMicroPrecM/totalMyMentionsM,
                    'S Micro Rec':totalMicroRecS/totalMentions, 
                    'M Micro Rec':totalMicroRecM/totalMentions,
 
@@ -237,8 +248,8 @@ for dataset in datasets:
                    'S Macro Rec':totalMacroRecS/totalLines, 
                    'M Macro Rec':totalMacroRecM/totalLines,
 
-                   'S BOT Micro Prec':totalBotMicroPrecS/totalMentions, 
-                   'M BOT Micro Prec':totalBotMicroPrecM/totalMentions,
+                   'S BOT Micro Prec':totalBotMicroPrecS/totalMyMentionsS, 
+                   'M BOT Micro Prec':totalBotMicroPrecM/totalMyMentionsM,
                    'S BOT Micro Rec':totalBotMicroRecS/totalMentions, 
                    'M BOT Micro Rec':totalBotMicroRecM/totalMentions,
 
@@ -301,16 +312,21 @@ for dataset in datasets:
         except:
             performances[dataset['name']][mthd]['M BOT Macro F1'] = 0
         
-print skipped
+print 'Skipped', skipped
+print badThing
+
 with open('/users/cs/amaral/wikisim/wikification/wikification_results.txt', 'a') as resultFile:
+    
     resultFile.write('\n' + str(datetime.now()) + '\n' 
                      + 'maxCands: ' + str(maxCands) + '\n'
                      + 'mlModel: ' + mlModel + '\n'
                      + 'erMethod: ' + erMethod + '\n'
                      + 'doHybrid: ' + str(doHybrid) + '\n'
                      + str(datetime.now()) + '\n\n')
-    comment = ''
+    
+    comment = 'Making hybrid candidate generation only generate based on title.'
     resultFile.write('Comment: ' + comment + '\n\n')
+    
     for dataset in datasets:
         resultFile.write(dataset['name'] + ':\n')
         for mthd in methods:
