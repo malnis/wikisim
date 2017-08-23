@@ -407,12 +407,21 @@ def getGoodMentions(splitText, mentions, model, overlapFix = False):
             # put score of prediction
             goodMentions[-1].append(model.predict_proba([aMention])[0][1]) # put score of prediction
             
+    
+    # get the right amount needed
+    if True:
+        amount = 5 + int(0.12778 * len(splitText))
+    else:
+        amount = len(goodMentions)
+            
     if overlapFix == False:
+        goodMentions = sorted(goodMentions, key = itemgetter(1), reverse = False)[:amount]
         return goodMentions        
     else:
         """
         Remove all overlaps in results.
         """
+            
         # sort on prediction probability descending
         goodMentions = sorted(goodMentions, key = itemgetter(-1), reverse = True)
 
@@ -439,12 +448,12 @@ def getGoodMentions(splitText, mentions, model, overlapFix = False):
         for mention in goodMentions:
             if len(mention) == goodlen:
                 finalMentions.append(mention[:3])
-
-        finalMentions = sorted(finalMentions, key = itemgetter(1), reverse = False)
+                
+        finalMentions = sorted(finalMentions, key = itemgetter(1), reverse = False)[:amount]
 
         return finalMentions
     
-def mentionExtract(text, mthd = 'cls1'):
+def mentionExtract(text, mthd = 'cls2'):
     """
     Description:
         Takes in a text and splits it into the different words/mentions.
@@ -1554,7 +1563,7 @@ def wikifyEval(text, mentionsGiven, maxC = 20, method='popular',
     
     return wikified
 
-def doWikify(text, maxC = 20, hybridC = False, method = 'multi', erMethod = 'cls1'):
+def doWikify(text, maxC = 20, hybridC = False, method = 'multi', erMethod = 'cls2'):
     """
     Description:
         Takes in text, and returns the location of mentions as well as the
@@ -1613,13 +1622,6 @@ def annotateText(text, maxC = 20, hybridC = False, method = 'multi', erMethod = 
         corresponding wikipedia page.
     """
     
-    text = text.replace(u'\u2010', '-')
-    text = text.replace(u'\u2011', '-')
-    text = text.replace(u'\u2012', '-')
-    text = text.replace(u'\u2013', '-')
-    text = text.replace(u'\u2014', '-')
-    text = text.replace(u'\u2015', '-')
-    
     # get the annotations
     ants = doWikify(text, maxC = maxC, hybridC = hybridC, method = method, erMethod = erMethod)
     
@@ -1657,8 +1659,8 @@ def annotateText(text, maxC = 20, hybridC = False, method = 'multi', erMethod = 
             newText += ('<a class="toooltip" target="_blank" href="https://en.wikipedia.org/wiki/'
                        + id2title(ants[curM][2]) + '">' 
                        + text[ants[curM][0]:ants[curM][1]] 
-                       + '<span class="toooltiptext"><strong>' + unidecode(ants[curM][3]) + '</strong><br/>' 
-                       + unidecode(ants[curM][4])
+                       + '<span class="toooltiptext"><strong>' + ants[curM][3].encode('utf-8') + '</strong><br/>' 
+                       + ants[curM][4].encode('utf-8')
                        + '</span></a>')
             curM += 1
         else:

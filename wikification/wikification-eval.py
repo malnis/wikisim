@@ -1,6 +1,12 @@
 """
 This is for testing performance of wikification.
-Micro and Macro of BOT and normal.
+
+Instruction: Simply change whatever parameters you want in this file, 
+some parameters are only changeable in wikification.py, so that will 
+have to be edited too. You can edit the 'comment' variable in the
+bottom of this script to describe what you are doing in the current
+test. Run this script with the command: 'python wikification-eval.py' 
+without the quotes. 
 """
 
 from __future__ import division
@@ -55,7 +61,7 @@ doManual = True # mentions not given
 verbose = True # decides how much stuff to ouput
 
 maxCands = 20 # amount of candidates for entity candidate generation (20 prefered)
-doHybrid = False # whether to do hybrid candidate generation (False prefered)
+doHybrid = True # whether to do hybrid candidate generation (False prefered)
 
 
 performances = {} # record data here
@@ -324,7 +330,7 @@ with open('/users/cs/amaral/wikisim/wikification/wikification_results.txt', 'a')
                      + 'doHybrid: ' + str(doHybrid) + '\n'
                      + str(datetime.now()) + '\n\n')
     
-    comment = 'Making hybrid candidate generation only generate based on title.'
+    comment = 'Hybrid Trained LMart with hybrid candidate generation and initial mention filter.'
     resultFile.write('Comment: ' + comment + '\n\n')
     
     for dataset in datasets:
