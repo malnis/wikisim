@@ -306,7 +306,11 @@ def getGoodMentions(splitText, mentions, model, overlapFix = False):
 
     # get stanford core mentions
     try:
-        stnfrdMentions0 = scnlp.annotate(" ".join(splitText).encode('utf-8'), properties={
+        try:
+            atext = " ".join(splitText).encode('utf-8')
+        except:
+            atext = " ".join(splitText)
+        stnfrdMentions0 = scnlp.annotate(atext, properties={
             'annotators': 'entitymentions',
             'outputFormat': 'json'})
     except:
@@ -504,7 +508,11 @@ def mentionExtract(text, mthd = 'cls2'):
     elif mthd == 'cls1': # this one lest solr deal with overlaps
         addr = 'http://localhost:8983/solr/enwikianchors20160305/tag'
         params={'overlaps':'LONGEST_DOMINANT_RIGHT', 'tagsLimit':'5000', 'fl':'id','wt':'json','indent':'on'}
-        r = requests.post(addr, params=params, data=text.encode('utf-8'))
+        try:
+            tmp1 = text.encode('utf-8')
+        except:
+            tmp1 = text
+        r = requests.post(addr, params=params, data=tmp1)
         textData0 = r.json()['tags']
         splitText = [] # the text now in split form
         mentions = [] # mentions before remove inadequate ones
@@ -523,7 +531,12 @@ def mentionExtract(text, mthd = 'cls2'):
     elif mthd == 'cls2': # this one we deal with overlaps
         addr = 'http://localhost:8983/solr/enwikianchors20160305/tag'
         params={'overlaps':'ALL', 'tagsLimit':'5000', 'fl':'id','wt':'json','indent':'on'}
-        r = requests.post(addr, params=params, data=text.encode('utf-8'))
+        
+        try:
+            tmp1 = text.encode('utf-8')
+        except:
+            tmp1 = text
+        r = requests.post(addr, params=params, data=tmp1)
         textData0 = r.json()['tags']
         splitText = [] # the text now in split form
         mentions = [] # mentions before remove inadequate ones
@@ -643,15 +656,26 @@ def generateCandidates(textData, maxC, hybrid = False):
             
             # select all the docs from Solr with the best scores, highest first.
             addr = 'http://localhost:8983/solr/enwiki20160305/select'
+
+            try:
+                tmp1 = mentionStr.encode('utf-8')
+            except:
+                tmp1 = mentionStr
             
             if len(ctxStr) >= 0:
                 params={'fl':'id', 'indent':'on', 'fq':" ".join(strIds),
-                        'q':'title:(' + mentionStr.encode('utf-8')+')^5',
+                        'q':'title:(' + tmp1+')^5',
                         'wt':'json', 'rows': str(ctxC)}
             else:
+                
+                try:
+                    tmp2 = ctxStr.encode('utf-8')
+                except:
+                    tmp2 = ctxStr
+                
                 params={'fl':'id', 'indent':'on', 'fq':" ".join(strIds),
-                        'q':'title:(' + mentionStr.encode('utf-8') + ')^5'
-                        + ' text:(' + ctxStr.encode('utf-8') + ')',
+                        'q':'title:(' + tmp1 + ')^5'
+                        + ' text:(' + tmp2 + ')',
                         'wt':'json', 'rows':str(ctxC)}
             
             r = requests.get(addr, params = params)
@@ -1023,10 +1047,20 @@ def getContext1Scores(mentionStr, context, candidates):
     
     strIds = ['id:' +  str(strId[0]) for strId in candidates]
     
+    try:
+        tmp1 = context.encode('utf-8')
+    except:
+        tmp1 = context
+        
+    try:
+        tmp2 = mentionStr.encode('utf-8')
+    except:
+        tmp2 = mentionStr
+    
     # select all the docs from Solr with the best scores, highest first.
     addr = 'http://localhost:8983/solr/enwiki20160305/select'
     params={'fl':'id score', 'fq':" ".join(strIds), 'indent':'on',
-            'q':'text:('+context.encode('utf-8')+')^1 title:(' + mentionStr.encode('utf-8')+')^1.35',
+            'q':'text:('+tmp1+')^1 title:(' + tmp2+')^1.35',
             'wt':'json'}
     r = requests.get(addr, params = params)
     
@@ -1064,10 +1098,20 @@ def bestContext1Match(mentionStr, context, candidates):
     
     strIds = ['id:' +  str(strId[0]) for strId in candidates]
     
+    try:
+        tmp1 = context.encode('utf-8')
+    except:
+        tmp1 = context
+        
+    try:
+        tmp2 = mentionStr.encode('utf-8')
+    except:
+        tmp2 = mentionStr
+    
     # select all the docs from Solr with the best scores, highest first.
     addr = 'http://localhost:8983/solr/enwiki20160305/select'
     params={'fl':'id score', 'fq':" ".join(strIds), 'indent':'on',
-            'q':'text:('+context.encode('utf-8')+')^1 title:(' + mentionStr.encode('utf-8')+')^1.35',
+            'q':'text:('+tmp1+')^1 title:(' + tmp2+')^1.35',
             'wt':'json'}
     r = requests.get(addr, params = params)
     
@@ -1122,11 +1166,21 @@ def getContext2Scores(mentionStr, context, candidates):
     scoreDict = {}
     for cand in candidates:
         scoreDict[str(cand[0])] = 0
+        
+    try:
+        tmp1 = context.encode('utf-8')
+    except:
+        tmp1 = context
+        
+    try:
+        tmp2 = mentionStr.encode('utf-8')
+    except:
+        tmp2 = mentionStr
     
     # select all the docs from Solr with the best scores, highest first.
     addr = 'http://localhost:8983/solr/enwiki20160305_context/select'
     params={'fl':'entityid', 'fq':" ".join(strIds), 'indent':'on',
-            'q':'_context_:('+context.encode('utf-8')+') entity:(' + mentionStr.encode('utf-8') + ')^1',
+            'q':'_context_:('+tmp1+') entity:(' + tmp2 + ')^1',
             'wt':'json'}
     r = requests.get(addr, params = params)
     
@@ -1164,11 +1218,21 @@ def bestContext2Match(mentionStr, context, candidates):
     scoreDict = {}
     for cand in candidates:
         scoreDict[str(cand[0])] = 0
+        
+    try:
+        tmp1 = context.encode('utf-8')
+    except:
+        tmp1 = context
+        
+    try:
+        tmp2 = mentionStr.encode('utf-8')
+    except:
+        tmp2 = mentionStr
     
     # select all the docs from Solr with the best scores, highest first.
     addr = 'http://localhost:8983/solr/enwiki20160305_context/select'
     params={'fl':'entityid', 'fq':" ".join(strIds), 'indent':'on',
-            'q':'_context_:('+context.encode('utf-8')+') entity:(' + mentionStr.encode('utf-8') + ')^1',
+            'q':'_context_:('+tmp1+') entity:(' + tmp2 + ')^1',
             'wt':'json'}
     r = requests.get(addr, params = params)
     
