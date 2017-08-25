@@ -125,7 +125,6 @@ def disambiguate_driver(S,M, C, ws, method='rvspagerank', direction=DIR_BOTH, op
                                              keyq: Key Entity based method
         
     """
-    #TODO: modify this chunking to an overlapping version
     if ws == 0: 
         return  disambiguate(S,M, C, method, direction, op_method)
     
@@ -140,8 +139,7 @@ def disambiguate_driver(S,M, C, ws, method='rvspagerank', direction=DIR_BOTH, op
         
     for w in windows:
         chunk_c = C[w[0]:w[1]]
-        
-        chunk_ids, chunk_titles = disambiguate(chunk_c, method, direction, op_method, S=None, M=None)
+        chunk_ids, chunk_titles = disambiguate(S, M, chunk_c, method, direction, op_method)
         ids += chunk_ids
         titles += chunk_titles
     return ids, titles     
@@ -838,8 +836,7 @@ def word_context_disambiguate(S, M, candslist, ws ):
         true_entities.append(cands[max_index][0])
 
     titles = ids2title(true_entities)
-    return true_entities, titles 
-
+    return true_entities, titles     
 ######
 
 def get_sim_matrix(candslist,method, direction):

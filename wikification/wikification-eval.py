@@ -40,7 +40,7 @@ datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}]
 #datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')},{'name':'wiki5000', 'path':os.path.join(pathStrt,'wiki-mentions.5000.json')},{'name':'nopop', 'path':os.path.join(pathStrt,'nopop.json')}]
 #datasets = [{'name':'wiki500', 'path':os.path.join(pathStrt,'wiki-mentions.500.json')}]
 #datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')},{'name':'wiki5000', 'path':os.path.join(pathStrt,'wiki-mentions.5000.json')},{'name':'nopop', 'path':os.path.join(pathStrt,'nopop.json')}]
-datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')},{'name':'nopop', 'path':os.path.join(pathStrt,'nopop.json')}]
+#datasets = [{'name':'kore', 'path':os.path.join(pathStrt,'kore.json')}, {'name':'AQUAINT', 'path':os.path.join(pathStrt,'AQUAINT.txt.json')}, {'name':'MSNBC', 'path':os.path.join(pathStrt,'MSNBC.txt.json')},{'name':'nopop', 'path':os.path.join(pathStrt,'nopop.json')}]
 
 # 'popular', 'context1', 'context2', 'word2vec', 'coherence', 'tagme', 'multi'
 methods = ['multi']
@@ -56,12 +56,12 @@ if 'word2vec' in methods:
         
 # can do both, none would be pointless
 doSplit = True # mentions are given
-doManual = True # mentions not given
+doManual = False # mentions not given
 
 verbose = True # decides how much stuff to ouput
 
 maxCands = 20 # amount of candidates for entity candidate generation (20 prefered)
-doHybrid = True # whether to do hybrid candidate generation (False prefered)
+doHybrid = False # whether to do hybrid candidate generation (False prefered)
 
 
 performances = {} # record data here
@@ -243,6 +243,15 @@ for dataset in datasets:
         
         # record results for this method on this dataset
         # all F1 scores are put in later to avoid division by 0 possibility
+        
+        # to stop errors
+        if totalMyMentionsS == 0:
+            totalMyMentionsS = -1
+        if totalMyMentionsM == 0:
+            totalMyMentionsM = -1
+        if totalMentions == 0:
+            totalMentions = -1
+        
         performances[dataset['name']][mthd] = {
                    'S Micro Prec':totalMicroPrecS/totalMyMentionsS, 
                    'M Micro Prec':totalMicroPrecM/totalMyMentionsM,
@@ -330,7 +339,7 @@ with open('/users/cs/amaral/wikisim/wikification/wikification_results.txt', 'a')
                      + 'doHybrid: ' + str(doHybrid) + '\n'
                      + str(datetime.now()) + '\n\n')
     
-    comment = 'Hybrid Trained LMart with hybrid candidate generation and initial mention filter.'
+    comment = 'Please make sure you delete this test.'
     resultFile.write('Comment: ' + comment + '\n\n')
     
     for dataset in datasets:
