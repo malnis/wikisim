@@ -1,4 +1,3 @@
-
 from wikipedia import * # uncomment
 from pagerank import * # uncomment
 import gensim
@@ -133,4 +132,3 @@ def getword2vector(word):
     if word not in _word2vec_model.vocab:
         return  pd.Series(sp.zeros(_word2vec_model.vector_size))
     return pd.Series(_word2vec_model[word])
-    

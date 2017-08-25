@@ -838,6 +838,7 @@ def word_context_disambiguate(S, M, candslist, ws ):
     titles = ids2title(true_entities)
     return true_entities, titles     
 ######
+
 def get_sim_matrix(candslist,method, direction):
     concepts=  list(chain(*candslist))
     concepts=  list(set(c[0] for c in concepts))
@@ -880,6 +881,3 @@ def tagme(candslist, method, direction, pop=False):
         #print index,"\n"
     titles = ids2title(res)
     return res, titles
-
-
-    

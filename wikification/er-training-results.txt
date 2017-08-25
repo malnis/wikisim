@@ -1,0 +1,350 @@
+th Ratio: 1
+adaboost:
+             precision    recall  f1-score   support
+
+          0       0.95      0.95      0.95      9646
+          1       0.95      0.95      0.95      9725
+
+avg / total       0.95      0.95      0.95     19371
+
+bagging:
+             precision    recall  f1-score   support
+
+          0       0.95      0.95      0.95      9646
+          1       0.95      0.95      0.95      9725
+
+avg / total       0.95      0.95      0.95     19371
+
+extra trees:
+             precision    recall  f1-score   support
+
+          0       0.95      0.95      0.95      9646
+          1       0.95      0.95      0.95      9725
+
+avg / total       0.95      0.95      0.95     19371
+
+gradient boosting:
+             precision    recall  f1-score   support
+
+          0       0.96      0.95      0.95      9646
+          1       0.95      0.96      0.96      9725
+
+avg / total       0.96      0.96      0.96     19371
+
+random forest:
+             precision    recall  f1-score   support
+
+          0       0.95      0.95      0.95      9646
+          1       0.95      0.95      0.95      9725
+
+avg / total       0.95      0.95      0.95     19371
+
+linear svc:
+             precision    recall  f1-score   support
+
+          0       0.91      0.97      0.94      9646
+          1       0.97      0.91      0.93      9725
+
+avg / total       0.94      0.94      0.94     19371
+
+svc:
+             precision    recall  f1-score   support
+
+          0       0.92      0.97      0.94      9646
+          1       0.96      0.92      0.94      9725
+
+avg / total       0.94      0.94      0.94     19371
+
+Ratio 1 done.
+
+
+With Ratio: 2
+adaboost:
+             precision    recall  f1-score   support
+
+          0       0.96      0.97      0.97     19317
+          1       0.94      0.93      0.93      9739
+
+avg / total       0.96      0.96      0.96     29056
+
+bagging:
+             precision    recall  f1-score   support
+
+          0       0.97      0.97      0.97     19317
+          1       0.94      0.93      0.94      9739
+
+avg / total       0.96      0.96      0.96     29056
+
+extra trees:
+             precision    recall  f1-score   support
+
+          0       0.97      0.97      0.97     19317
+          1       0.94      0.94      0.94      9739
+
+avg / total       0.96      0.96      0.96     29056
+
+gradient boosting:
+             precision    recall  f1-score   support
+
+          0       0.97      0.97      0.97     19317
+          1       0.95      0.93      0.94      9739
+
+avg / total       0.96      0.96      0.96     29056
+
+random forest:
+             precision    recall  f1-score   support
+
+          0       0.97      0.97      0.97     19317
+          1       0.94      0.94      0.94      9739
+
+avg / total       0.96      0.96      0.96     29056
+
+linear svc:
+             precision    recall  f1-score   support
+
+          0       0.94      0.98      0.96     19317
+          1       0.95      0.88      0.92      9739
+
+avg / total       0.95      0.95      0.95     29056
+
+svc:
+             precision    recall  f1-score   support
+
+          0       0.95      0.98      0.96     19317
+          1       0.95      0.90      0.93      9739
+
+avg / total       0.95      0.95      0.95     29056
+
+Ratio 2 done.
+
+
+With Ratio: 4
+adaboost:
+             precision    recall  f1-score   support
+
+          0       0.97      0.98      0.98     38712
+          1       0.93      0.89      0.91      9716
+
+avg / total       0.96      0.96      0.96     48428
+
+bagging:
+             precision    recall  f1-score   support
+
+          0       0.98      0.98      0.98     38712
+          1       0.92      0.90      0.91      9716
+
+avg / total       0.96      0.96      0.96     48428
+
+extra trees:
+             precision    recall  f1-score   support
+
+          0       0.97      0.98      0.98     38712
+          1       0.93      0.90      0.91      9716
+
+avg / total       0.97      0.97      0.97     48428
+
+gradient boosting:
+             precision    recall  f1-score   support
+
+          0       0.97      0.99      0.98     38712
+          1       0.94      0.89      0.92      9716
+
+avg / total       0.97      0.97      0.97     48428
+
+random forest:
+             precision    recall  f1-score   support
+
+          0       0.98      0.98      0.98     38712
+          1       0.93      0.90      0.91      9716
+
+avg / total       0.97      0.97      0.97     48428
+
+linear svc:
+             precision    recall  f1-score   support
+
+          0       0.96      0.99      0.97     38712
+          1       0.94      0.83      0.88      9716
+
+avg / total       0.95      0.96      0.95     48428
+
+svc:
+             precision    recall  f1-score   support
+
+          0       0.97      0.99      0.98     38712
+          1       0.94      0.87      0.90      9716
+
+avg / total       0.96      0.96      0.96     48428
+
+Ratio 4 done.
+
+
+With Ratio: 7
+adaboost:
+             precision    recall  f1-score   support
+
+          0       0.98      0.99      0.98     67927
+          1       0.91      0.86      0.88      9557
+
+avg / total       0.97      0.97      0.97     77484
+
+bagging:
+             precision    recall  f1-score   support
+
+          0       0.98      0.99      0.98     67927
+          1       0.90      0.87      0.89      9557
+
+avg / total       0.97      0.97      0.97     77484
+
+extra trees:
+             precision    recall  f1-score   support
+
+          0       0.98      0.99      0.99     67927
+          1       0.91      0.88      0.89      9557
+
+avg / total       0.97      0.97      0.97     77484
+
+gradient boosting:
+             precision    recall  f1-score   support
+
+          0       0.98      0.99      0.99     67927
+          1       0.93      0.87      0.90      9557
+
+avg / total       0.97      0.98      0.97     77484
+
+random forest:
+             precision    recall  f1-score   support
+
+          0       0.98      0.99      0.99     67927
+          1       0.91      0.88      0.89      9557
+
+avg / total       0.97      0.97      0.97     77484
+
+linear svc:
+             precision    recall  f1-score   support
+
+          0       0.97      0.99      0.98     67927
+          1       0.92      0.80      0.85      9557
+
+avg / total       0.96      0.97      0.96     77484
+
+svc:
+             precision    recall  f1-score   support
+
+          0       0.97      0.99      0.98     67927
+          1       0.94      0.82      0.88      9557
+
+avg / total       0.97      0.97      0.97     77484
+
+Ratio 7 done.
+
+
+With Ratio: 10
+adaboost:
+             precision    recall  f1-score   support
+
+          0       0.98      0.99      0.99     90878
+          1       0.92      0.83      0.87      9635
+
+avg / total       0.98      0.98      0.98    100513
+
+bagging:
+             precision    recall  f1-score   support
+
+          0       0.98      0.99      0.99     90878
+          1       0.90      0.85      0.88      9635
+
+avg / total       0.98      0.98      0.98    100513
+
+extra trees:
+             precision    recall  f1-score   support
+
+          0       0.98      0.99      0.99     90878
+          1       0.91      0.85      0.88      9635
+
+avg / total       0.98      0.98      0.98    100513
+
+gradient boosting:
+             precision    recall  f1-score   support
+
+          0       0.98      0.99      0.99     90878
+          1       0.93      0.84      0.88      9635
+
+avg / total       0.98      0.98      0.98    100513
+
+random forest:
+             precision    recall  f1-score   support
+
+          0       0.98      0.99      0.99     90878
+          1       0.91      0.85      0.88      9635
+
+avg / total       0.98      0.98      0.98    100513
+
+linear svc:
+             precision    recall  f1-score   support
+
+          0       0.98      0.99      0.98     90878
+          1       0.91      0.78      0.84      9635
+
+avg / total       0.97      0.97      0.97    100513
+
+==========================================================
+With more data
+
+With Ratio: 1
+adaboost:
+             precision    recall  f1-score   support
+
+          0       0.95      0.96      0.96     28116
+          1       0.96      0.95      0.95     27831
+
+avg / total       0.96      0.96      0.96     55947
+
+bagging:
+             precision    recall  f1-score   support
+
+          0       0.96      0.96      0.96     28116
+          1       0.96      0.96      0.96     27831
+
+avg / total       0.96      0.96      0.96     55947
+
+extra trees:
+             precision    recall  f1-score   support
+
+          0       0.96      0.96      0.96     28116
+          1       0.96      0.96      0.96     27831
+
+avg / total       0.96      0.96      0.96     55947
+
+gradient boosting:
+             precision    recall  f1-score   support
+
+          0       0.96      0.96      0.96     28116
+          1       0.96      0.96      0.96     27831
+
+avg / total       0.96      0.96      0.96     55947
+
+random forest:
+             precision    recall  f1-score   support
+
+          0       0.96      0.96      0.96     28116
+          1       0.96      0.96      0.96     27831
+
+avg / total       0.96      0.96      0.96     55947
+
+linear svc:
+             precision    recall  f1-score   support
+
+          0       0.92      0.97      0.95     28116
+          1       0.97      0.91      0.94     27831
+
+avg / total       0.94      0.94      0.94     55947
+
+svc:
+             precision    recall  f1-score   support
+
+          0       0.94      0.97      0.95     28116
+          1       0.97      0.93      0.95     27831
+
+avg / total       0.95      0.95      0.95     55947
+
+Ratio 1 done.

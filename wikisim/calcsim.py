@@ -295,7 +295,6 @@ def getembed_file(infilename, outfilename, direction, get_titles=False, cutoff=N
         direction: 0 for in, 1 for out, 2 for all
         titles: include titles in the embedding (not needed for mere calculations)
         cutoff: the first top cutoff dimensions (None for all)        
-
     """
     
     log('[getembed_file started]\t%s -> %s', infilename, outfilename)

@@ -1,0 +1,37 @@
+context branch length 10
+
+{'kore': {
+'popular': {
+	'Manual Split Precision': 0.0, 
+	'Pre-Split Recall': 0.36233333333333334, 
+	'Manual Split Recall': 0.0, 
+	'Pre-Split Precision': 0.36233333333333334}, 
+'context': {
+	'Manual Split Precision': 0.0, 
+	'Pre-Split Recall': 0.43233333333333335, >>>>>>>>>>>>
+	'Manual Split Recall': 0.0, 
+	'Pre-Split Precision': 0.43233333333333335}}, >>>>>>>>>>>>
+
+'MSNBC': {
+'popular': {
+	'Manual Split Precision': 0.0, 
+	'Pre-Split Recall': 0.7021635474926601, >>>>>>>>>>>>
+	'Manual Split Recall': 0.0, 
+	'Pre-Split Precision': 0.7021635474926601}, >>>>>>>>>>>>
+'context': {
+	'Manual Split Precision': 0.0, 
+	'Pre-Split Recall': 0.5130761279538277, 
+	'Manual Split Recall': 0.0, 
+	'Pre-Split Precision': 0.5130761279538277}}, 
+
+'AQUAINT': {
+'popular': {
+	'Manual Split Precision': 0.0, 
+	'Pre-Split Recall': 0.811039413346857, >>>>>>>>>>>>
+	'Manual Split Recall': 0.0, 
+	'Pre-Split Precision': 0.811039413346857}, >>>>>>>>>>>>
+'context': {
+	'Manual Split Precision': 0.0, 
+	'Pre-Split Recall': 0.4752001546112462, 
+	'Manual Split Recall': 0.0, 
+	'Pre-Split Precision': 0.4752001546112462}}}
